@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import { useAuth } from '@/contexts/AuthContext';
 import AuthContainer from '@/components/common/AuthContainer';
 import LoginForm from '@/components/auth/LoginForm';
 
@@ -10,32 +10,22 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleLogin = async (email: string, password: string) => {
     setLoading(true);
     setError('');
 
-    try {
-      const response = await axios.post('/api/auth/login', {
-        email,
-        password,
-      });
-
-      if (response.data.success) {
-        // Store token or user data as needed
-        localStorage.setItem('token', response.data.token);
-        router.push('/dashboard'); // or wherever you want to redirect
-      } else {
-        setError(response.data.message || 'Login failed');
-      }
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message || 
-        'Network error. Please check your connection and try again.'
-      );
-    } finally {
-      setLoading(false);
+    const result = await login(email, password);
+    
+    if (result.success) {
+      // Redirect to dashboard or admin panel
+      router.push('/admin/dashboard');
+    } else {
+      setError(result.message || 'Login failed');
     }
+    
+    setLoading(false);
   };
 
   return (

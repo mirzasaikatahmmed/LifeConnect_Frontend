@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Typography, IconButton, Alert, LinearProgress, Chip } from '@mui/material';
 import { Person, Email, Lock, Visibility, VisibilityOff, Phone } from '@mui/icons-material';
 import Input from '@/components/ui/Input';
@@ -273,13 +274,13 @@ export default function RegisterForm({ onSubmit, loading = false, error }: Regis
             />
             <label htmlFor="terms" className="text-sm text-gray-700 cursor-pointer leading-relaxed">
               I agree to the{' '}
-              <a href="/terms" className="text-primary-600 hover:text-primary-500 font-medium hover:underline">
+              <Link href="/terms" className="text-primary-600 hover:text-primary-500 font-medium hover:underline">
                 Terms of Service
-              </a>{' '}
+              </Link>{' '}
               and{' '}
-              <a href="/privacy" className="text-primary-600 hover:text-primary-500 font-medium hover:underline">
+              <Link href="/privacy" className="text-primary-600 hover:text-primary-500 font-medium hover:underline">
                 Privacy Policy
-              </a>
+              </Link>
             </label>
           </div>
           {formErrors.terms && (

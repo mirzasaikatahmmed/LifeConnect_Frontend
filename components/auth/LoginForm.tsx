@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Typography, IconButton, Alert, LinearProgress } from '@mui/material';
 import { Email, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
 import Input from '@/components/ui/Input';
@@ -81,48 +82,62 @@ export default function LoginForm({ onSubmit, loading = false, error }: LoginFor
       )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="space-y-4">
-          <Input
-            label="Email Address"
-            type="email"
-            value={formData.email}
-            onChange={handleChange('email')}
-            startIcon={<Email />}
-            placeholder="Enter your email address"
-            error={!!formErrors.email}
-            helperText={formErrors.email}
-            disabled={loading}
-            className={cn(
-              'transition-all duration-200',
-              formErrors.email && 'animate-bounce-gentle'
-            )}
-          />
+        <div className="space-y-5">
+          <div className="relative group">
+            <Input
+              label="Email Address"
+              type="email"
+              value={formData.email}
+              onChange={handleChange('email')}
+              startIcon={<Email className="text-gray-400 group-focus-within:text-blue-500 transition-colors" />}
+              placeholder="Enter your email address"
+              error={!!formErrors.email}
+              helperText={formErrors.email}
+              disabled={loading}
+              className={cn(
+                'transition-all duration-300',
+                'focus-within:scale-[1.02] focus-within:shadow-lg',
+                'hover:shadow-md',
+                formErrors.email && 'animate-bounce-gentle'
+              )}
+            />
+          </div>
 
-          <Input
-            label="Password"
-            type={showPassword ? 'text' : 'password'}
-            value={formData.password}
-            onChange={handleChange('password')}
-            startIcon={<Lock />}
-            endIcon={
-              <IconButton
-                onClick={() => setShowPassword(!showPassword)}
-                edge="end"
-                size="small"
-                className="hover:bg-gray-100 transition-colors"
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            }
-            placeholder="Enter your password"
-            error={!!formErrors.password}
-            helperText={formErrors.password}
-            disabled={loading}
-            className={cn(
-              'transition-all duration-200',
-              formErrors.password && 'animate-bounce-gentle'
-            )}
-          />
+          <div className="relative group">
+            <Input
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              value={formData.password}
+              onChange={handleChange('password')}
+              startIcon={<Lock className="text-gray-400 group-focus-within:text-blue-500 transition-colors" />}
+              endIcon={
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  edge="end"
+                  size="small"
+                  className={cn(
+                    "hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50",
+                    "transition-all duration-200 rounded-full"
+                  )}
+                >
+                  {showPassword ? 
+                    <VisibilityOff className="text-gray-400 hover:text-purple-500 transition-colors" /> : 
+                    <Visibility className="text-gray-400 hover:text-purple-500 transition-colors" />
+                  }
+                </IconButton>
+              }
+              placeholder="Enter your password"
+              error={!!formErrors.password}
+              helperText={formErrors.password}
+              disabled={loading}
+              className={cn(
+                'transition-all duration-300',
+                'focus-within:scale-[1.02] focus-within:shadow-lg',
+                'hover:shadow-md',
+                formErrors.password && 'animate-bounce-gentle'
+              )}
+            />
+          </div>
         </div>
 
         <div className="flex items-center justify-between">
@@ -140,7 +155,7 @@ export default function LoginForm({ onSubmit, loading = false, error }: LoginFor
             </label>
           </div>
           
-          <a
+          <Link
             href="/login/forgot-password"
             className={cn(
               'text-sm text-primary-600 hover:text-primary-500',
@@ -149,7 +164,7 @@ export default function LoginForm({ onSubmit, loading = false, error }: LoginFor
             )}
           >
             Forgot password?
-          </a>
+          </Link>
         </div>
 
         <Button
@@ -157,15 +172,25 @@ export default function LoginForm({ onSubmit, loading = false, error }: LoginFor
           variant="primary"
           size="lg"
           disabled={loading}
-          className="w-full"
+          className={cn(
+            "w-full relative overflow-hidden",
+            "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600",
+            "hover:from-blue-700 hover:via-purple-700 hover:to-pink-700",
+            "transform hover:scale-105 transition-all duration-300",
+            "shadow-lg hover:shadow-xl",
+            "before:absolute before:inset-0 before:bg-gradient-to-r",
+            "before:from-transparent before:via-white/20 before:to-transparent",
+            "before:translate-x-[-100%] hover:before:translate-x-[100%]",
+            "before:transition-transform before:duration-1000"
+          )}
         >
           {loading ? (
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>Signing in...</span>
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span className="font-semibold">Signing in...</span>
             </div>
           ) : (
-            'Sign In'
+            <span className="font-semibold text-white drop-shadow-sm">Sign In</span>
           )}
         </Button>
       </form>
@@ -173,7 +198,7 @@ export default function LoginForm({ onSubmit, loading = false, error }: LoginFor
       <div className="text-center">
         <Typography variant="body2" className="text-gray-600">
           Don't have an account?{' '}
-          <a
+          <Link
             href="/register"
             className={cn(
               'text-primary-600 hover:text-primary-500 font-medium',
@@ -181,7 +206,7 @@ export default function LoginForm({ onSubmit, loading = false, error }: LoginFor
             )}
           >
             Sign up here
-          </a>
+          </Link>
         </Typography>
       </div>
     </div>
