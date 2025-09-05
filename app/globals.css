@@ -171,6 +171,19 @@ body {
   border: 1px solid #bbf7d0;
 }
 
+/* Form validation error styles */
+.form-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.form-input.error {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
 /* Password Strength Indicator */
 .password-strength {
   margin-top: 0.5rem;

@@ -22,10 +22,29 @@ export default function AdminRegisterContainer() {
     setMessage('');
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/admin-register`, adminData);
+      console.log('Registering admin with data:', adminData);
+      console.log('API URL:', `${process.env.NEXT_PUBLIC_API_URL}/admin-register`);
+      
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/admin-register`, adminData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      console.log('Registration successful:', response.data);
       setMessage('Admin registered successfully!');
     } catch (error: any) {
-      setMessage(error.response?.data?.message || 'An error occurred during registration');
+      console.error('Registration error:', error);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      
+      if (error.response?.status === 404) {
+        setMessage('Registration endpoint not found. Please check if the backend server is running.');
+      } else if (error.response?.status >= 500) {
+        setMessage('Server error occurred. Please try again later.');
+      } else {
+        setMessage(error.response?.data?.message || 'An error occurred during registration');
+      }
     } finally {
       setIsLoading(false);
     }
