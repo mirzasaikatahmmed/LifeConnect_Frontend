@@ -1,4 +1,4 @@
-import AdminRegisterContainer from '@/components/auth/AdminRegisterContainer';
+import AdminRegisterContainer from '@/components/admin/AdminRegisterContainer';
 
 export default function AdminRegisterPage() {
   return (
