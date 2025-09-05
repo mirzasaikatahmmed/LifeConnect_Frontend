@@ -104,7 +104,7 @@ export default function Home() {
           
           <Grid container spacing={4}>
             {features.map(({ icon: Icon, title, description }, index) => (
-              <Grid item xs={12} md={6} lg={3} key={title}>
+              <Grid xs={12} md={6} lg={3} key={title}>
                 <Card 
                   hover 
                   className={cn(
@@ -174,7 +174,7 @@ export default function Home() {
               { number: '1M+', label: 'Connections Made' },
               { number: '99.9%', label: 'Uptime' },
             ].map(({ number, label }) => (
-              <Grid item xs={6} md={3} key={label}>
+              <Grid xs={6} md={3} key={label}>
                 <Typography variant="h3" className="font-bold text-primary-600 mb-2">
                   {number}
                 </Typography>
