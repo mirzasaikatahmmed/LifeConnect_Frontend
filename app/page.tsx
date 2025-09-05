@@ -1,103 +1,191 @@
-import Image from "next/image";
+'use client';
+
+import { Typography, Container, Grid, Box } from '@mui/material';
+import { ArrowForward, People, Security, Speed, Support } from '@mui/icons-material';
+import Link from 'next/link';
+import { Button, Card, CardBody } from '@/components/ui';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const features = [
+    {
+      icon: People,
+      title: 'Connect People',
+      description: 'Build meaningful relationships and expand your network with like-minded individuals.',
+    },
+    {
+      icon: Security,
+      title: 'Secure & Private',
+      description: 'Your data is protected with enterprise-grade security and privacy measures.',
+    },
+    {
+      icon: Speed,
+      title: 'Fast & Reliable',
+      description: 'Experience lightning-fast performance with 99.9% uptime guaranteed.',
+    },
+    {
+      icon: Support,
+      title: '24/7 Support',
+      description: 'Get help whenever you need it with our dedicated support team.',
+    },
+  ];
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className={cn(
+        'relative bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100',
+        'py-20 overflow-hidden'
+      )}>
+        <Container maxWidth="lg">
+          <div className="text-center space-y-8">
+            <Typography 
+              variant="h1" 
+              className={cn(
+                'text-4xl md:text-6xl font-bold text-gray-800 mb-6',
+                'animate-slide-up'
+              )}
+            >
+              Connect. Share.{' '}
+              <span className="bg-gradient-primary bg-clip-text text-transparent">
+                Grow.
+              </span>
+            </Typography>
+            
+            <Typography 
+              variant="h5" 
+              className={cn(
+                'text-gray-600 max-w-2xl mx-auto leading-relaxed',
+                'animate-slide-up delay-200'
+              )}
+            >
+              Join LifeConnect and discover a new way to build meaningful relationships, 
+              share experiences, and grow together in a supportive community.
+            </Typography>
+            
+            <div className={cn(
+              'flex flex-col sm:flex-row gap-4 justify-center mt-8',
+              'animate-slide-up delay-300'
+            )}>
+              <Link href="/register">
+                <Button variant="primary" size="lg" className="group">
+                  Get Started Today
+                  <ArrowForward className="ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button variant="outline" size="lg">
+                  Sign In
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </Container>
+        
+        {/* Background decoration */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary-200/30 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-secondary-200/30 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-white">
+        <Container maxWidth="lg">
+          <div className="text-center mb-16">
+            <Typography variant="h2" className="text-gray-800 font-bold mb-4">
+              Why Choose LifeConnect?
+            </Typography>
+            <Typography variant="body1" className="text-gray-600 max-w-2xl mx-auto">
+              Discover the features that make LifeConnect the perfect platform for 
+              building lasting connections and meaningful relationships.
+            </Typography>
+          </div>
+          
+          <Grid container spacing={4}>
+            {features.map(({ icon: Icon, title, description }, index) => (
+              <Grid item xs={12} md={6} lg={3} key={title}>
+                <Card 
+                  hover 
+                  className={cn(
+                    'h-full text-center group',
+                    'animate-slide-up',
+                    `delay-[${index * 100}ms]`
+                  )}
+                >
+                  <CardBody className="space-y-4">
+                    <div className={cn(
+                      'w-16 h-16 bg-gradient-primary rounded-2xl',
+                      'flex items-center justify-center mx-auto',
+                      'group-hover:scale-110 transition-transform duration-300'
+                    )}>
+                      <Icon className="text-white text-2xl" />
+                    </div>
+                    
+                    <Typography variant="h6" className="font-semibold text-gray-800">
+                      {title}
+                    </Typography>
+                    
+                    <Typography variant="body2" className="text-gray-600 leading-relaxed">
+                      {description}
+                    </Typography>
+                  </CardBody>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </section>
+
+      {/* CTA Section */}
+      <section className={cn(
+        'py-20 bg-gradient-to-r from-primary-600 to-secondary-600',
+        'text-white text-center'
+      )}>
+        <Container maxWidth="md">
+          <Typography variant="h2" className="font-bold mb-4">
+            Ready to Get Started?
+          </Typography>
+          <Typography variant="h6" className="mb-8 opacity-90">
+            Join thousands of users who are already connecting and growing with LifeConnect.
+          </Typography>
+          <Link href="/register">
+            <Button 
+              variant="secondary" 
+              size="lg" 
+              className={cn(
+                'bg-white text-primary-600 hover:bg-gray-50',
+                'hover:shadow-2xl hover:scale-105'
+              )}
+            >
+              Create Your Free Account
+            </Button>
+          </Link>
+        </Container>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-gray-50">
+        <Container maxWidth="lg">
+          <Grid container spacing={4} className="text-center">
+            {[
+              { number: '10K+', label: 'Active Users' },
+              { number: '500+', label: 'Communities' },
+              { number: '1M+', label: 'Connections Made' },
+              { number: '99.9%', label: 'Uptime' },
+            ].map(({ number, label }) => (
+              <Grid item xs={6} md={3} key={label}>
+                <Typography variant="h3" className="font-bold text-primary-600 mb-2">
+                  {number}
+                </Typography>
+                <Typography variant="body1" className="text-gray-600">
+                  {label}
+                </Typography>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </section>
     </div>
   );
 }
