@@ -102,9 +102,9 @@ export default function Home() {
             </Typography>
           </div>
           
-          <Grid container spacing={4}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map(({ icon: Icon, title, description }, index) => (
-              <Grid xs={12} md={6} lg={3} key={title}>
+              <div key={title}>
                 <Card 
                   hover 
                   className={cn(
@@ -131,9 +131,9 @@ export default function Home() {
                     </Typography>
                   </CardBody>
                 </Card>
-              </Grid>
+              </div>
             ))}
-          </Grid>
+          </div>
         </Container>
       </section>
 
@@ -167,23 +167,23 @@ export default function Home() {
       {/* Stats Section */}
       <section className="py-16 bg-gray-50">
         <Container maxWidth="lg">
-          <Grid container spacing={4} className="text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             {[
               { number: '10K+', label: 'Active Users' },
               { number: '500+', label: 'Communities' },
               { number: '1M+', label: 'Connections Made' },
               { number: '99.9%', label: 'Uptime' },
             ].map(({ number, label }) => (
-              <Grid xs={6} md={3} key={label}>
+              <div key={label}>
                 <Typography variant="h3" className="font-bold text-primary-600 mb-2">
                   {number}
                 </Typography>
                 <Typography variant="body1" className="text-gray-600">
                   {label}
                 </Typography>
-              </Grid>
+              </div>
             ))}
-          </Grid>
+          </div>
         </Container>
       </section>
     </div>

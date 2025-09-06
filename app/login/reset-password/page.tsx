@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 import AuthContainer from '@/components/common/AuthContainer';
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [token, setToken] = useState('');
@@ -113,5 +113,19 @@ export default function ResetPasswordPage() {
         error={error}
       />
     </AuthContainer>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <AuthContainer title="Reset Password" subtitle="Loading...">
+        <div className="text-center py-8">
+          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        </div>
+      </AuthContainer>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

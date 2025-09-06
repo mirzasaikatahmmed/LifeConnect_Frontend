@@ -179,8 +179,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <Grid container spacing={4} className="mb-8">
-          <Grid item xs={12} sm={6} md={3}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div>
             <Card className="hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-r from-blue-50 to-blue-100">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -210,9 +210,9 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </Grid>
+          </div>
 
-          <Grid item xs={12} sm={6} md={3}>
+          <div>
             <Card className="hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-r from-red-50 to-red-100">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -243,9 +243,9 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </Grid>
+          </div>
 
-          <Grid item xs={12} sm={6} md={3}>
+          <div>
             <Card className="hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-r from-green-50 to-green-100">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -275,9 +275,9 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </Grid>
+          </div>
 
-          <Grid item xs={12} sm={6} md={3}>
+          <div>
             <Card className="hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-r from-yellow-50 to-yellow-100">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -308,13 +308,13 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
+          </div>
+        </div>
 
         {/* Charts Section */}
-        <Grid container spacing={4} className="mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* User Registrations Chart */}
-          <Grid item xs={12} lg={8}>
+          <div className="lg:col-span-2">
             <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md h-full">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
@@ -350,10 +350,10 @@ export default function AdminDashboard() {
                 )}
               </CardContent>
             </Card>
-          </Grid>
+          </div>
 
           {/* Blood Type Distribution */}
-          <Grid item xs={12} lg={4}>
+          <div>
             <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md h-full">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
@@ -388,13 +388,13 @@ export default function AdminDashboard() {
                 )}
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
+          </div>
+        </div>
 
         {/* Bottom Section */}
-        <Grid container spacing={4}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* User Types Chart */}
-          <Grid item xs={12} md={6}>
+          <div>
             <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md h-full">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
@@ -430,10 +430,10 @@ export default function AdminDashboard() {
                 )}
               </CardContent>
             </Card>
-          </Grid>
+          </div>
 
           {/* Quick Actions */}
-          <Grid item xs={12} md={6}>
+          <div>
             <Card className="hover:shadow-lg transition-shadow duration-300 border-0 shadow-md h-full">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
@@ -507,8 +507,8 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
+          </div>
+        </div>
       </div>
     </div>
   );

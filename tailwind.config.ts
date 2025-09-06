@@ -87,10 +87,6 @@ const config: Config = {
   plugins: [
     // Add any Tailwind plugins you need here
   ],
-  // Ensure compatibility with Material UI
-  corePlugins: {
-    preflight: false, // Disable Tailwind's reset to avoid conflicts with Material UI's CssBaseline
-  },
 }
 
 export default config

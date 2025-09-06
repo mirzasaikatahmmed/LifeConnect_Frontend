@@ -4,7 +4,7 @@ import { Button as MuiButton, ButtonProps as MuiButtonProps } from '@mui/materia
 import { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 
-interface ButtonProps extends Omit<MuiButtonProps, 'variant'> {
+interface ButtonProps extends Omit<MuiButtonProps, 'variant' | 'size'> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
