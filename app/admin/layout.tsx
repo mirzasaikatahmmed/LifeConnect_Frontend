@@ -89,10 +89,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    // Allow access to register page without authentication
+    if (!isAuthenticated && !pathname.includes('/register')) {
       router.push('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, pathname]);
 
   const handleLogout = () => {
     logout();
@@ -107,8 +108,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     return pathname === href || pathname.startsWith(href + '/');
   };
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !pathname.includes('/register')) {
     return null;
+  }
+
+  // Simple layout for register page
+  if (pathname.includes('/register')) {
+    return <>{children}</>;
   }
 
   const sidebarContent = (
