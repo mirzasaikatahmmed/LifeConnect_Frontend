@@ -28,7 +28,7 @@ export default function ResetPasswordPage() {
 
   const verifyToken = async (resetToken: string) => {
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/verify-reset-token`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/verify-reset-token`, {
         token: resetToken,
       });
       setTokenValid(response.data.valid);
@@ -50,7 +50,7 @@ export default function ResetPasswordPage() {
     setError('');
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/reset-password`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/reset-password`, {
         token,
         password,
       });

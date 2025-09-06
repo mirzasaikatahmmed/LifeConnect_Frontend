@@ -23,9 +23,9 @@ export default function AdminRegisterContainer() {
 
     try {
       console.log('Registering admin with data:', adminData);
-      console.log('API URL:', `${process.env.NEXT_PUBLIC_API_URL}/admin-register`);
-      
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/admin-register`, adminData, {
+      console.log('API URL:', `${process.env.NEXT_PUBLIC_API_URL}/api/admin-register`);
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/admin-register`, adminData, {
         headers: {
           'Content-Type': 'application/json',
         },

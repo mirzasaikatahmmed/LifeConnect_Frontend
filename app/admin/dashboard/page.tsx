@@ -91,10 +91,10 @@ export default function AdminDashboard() {
       setError(null);
 
       const [statsResponse, chartsResponse] = await Promise.all([
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/stats`, {
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/dashboard/stats`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/charts`, {
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/dashboard/charts`, {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
