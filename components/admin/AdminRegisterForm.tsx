@@ -216,7 +216,7 @@ export default function AdminRegisterForm({ onSubmit, isLoading }: AdminRegister
             value={formData.phoneNumber}
             onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
             startIcon={<Phone />}
-            placeholder="+1 (555) 123-4567"
+            placeholder="+8801700000000"
             error={!!errors.phoneNumber}
             helperText={errors.phoneNumber || "Include country code for international numbers"}
             disabled={isLoading}
@@ -235,7 +235,7 @@ export default function AdminRegisterForm({ onSubmit, isLoading }: AdminRegister
             value={formData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
             startIcon={<Email />}
-            placeholder="admin@lifeconnect.com"
+            placeholder="example@domain.com"
             error={!!errors.email}
             helperText={errors.email || "This will be your login email address"}
             disabled={isLoading}
