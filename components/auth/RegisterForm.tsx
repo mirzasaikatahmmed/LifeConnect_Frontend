@@ -311,7 +311,7 @@ export default function RegisterForm({ onSubmit, loading = false, error }: Regis
       <div className="text-center">
         <Typography variant="body2" className="text-gray-600">
           Already have an account?{' '}
-          <a
+          <link
             href="/login"
             className={cn(
               'text-primary-600 hover:text-primary-500 font-medium',
@@ -319,7 +319,7 @@ export default function RegisterForm({ onSubmit, loading = false, error }: Regis
             )}
           >
             Sign in here
-          </a>
+          </link>
         </Typography>
       </div>
     </div>
