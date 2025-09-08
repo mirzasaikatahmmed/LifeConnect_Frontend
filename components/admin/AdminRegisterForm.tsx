@@ -80,6 +80,8 @@ export default function AdminRegisterForm({ onSubmit, isLoading }: AdminRegister
       newErrors.name = 'Name is required';
     } else if (formData.name.trim().length < 2) {
       newErrors.name = 'Name must be at least 2 characters';
+    } else if (!/^[A-Za-z\s]+$/.test(formData.name.trim())) {
+      newErrors.name = 'Name must contain only letters and spaces';
     }
 
     // Email validation
