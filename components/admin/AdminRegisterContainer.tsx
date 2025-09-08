@@ -38,12 +38,6 @@ export default function AdminRegisterContainer() {
       console.log('Registration successful:', response.data);
       setMessage('Admin registered successfully! Welcome to the LifeConnect administration team.');
       setMessageType('success');
-      
-      // Optionally redirect after success
-      // setTimeout(() => {
-      //   window.location.href = '/admin/dashboard';
-      // }, 2000);
-      
     } catch (error: any) {
       console.error('Registration error:', error);
       console.error('Error response:', error.response?.data);
