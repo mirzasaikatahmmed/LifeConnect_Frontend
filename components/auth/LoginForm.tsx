@@ -9,7 +9,7 @@ import Button from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 
 interface LoginFormProps {
-  onSubmit: (email: string, password: string) => void;
+  onSubmit: (email: string, password: string, rememberMe: boolean) => void;
   loading?: boolean;
   error?: string;
 }
@@ -19,6 +19,7 @@ export default function LoginForm({ onSubmit, loading = false, error }: LoginFor
     email: '',
     password: '',
   });
+  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
@@ -44,7 +45,7 @@ export default function LoginForm({ onSubmit, loading = false, error }: LoginFor
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm() && !loading) {
-      onSubmit(formData.email, formData.password);
+      onSubmit(formData.email, formData.password, rememberMe);
     }
   };
 
@@ -145,13 +146,21 @@ export default function LoginForm({ onSubmit, loading = false, error }: LoginFor
             <input
               id="remember"
               type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              disabled={loading}
               className={cn(
                 'w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded',
-                'focus:ring-primary-500 focus:ring-2'
+                'focus:ring-primary-500 focus:ring-2',
+                'disabled:opacity-50 disabled:cursor-not-allowed'
               )}
             />
-            <label htmlFor="remember" className="text-sm text-gray-700 cursor-pointer">
-              Remember me
+            <label 
+              htmlFor="remember" 
+              className="text-sm text-gray-700 cursor-pointer"
+              title={rememberMe ? "Keep me logged in for 30 days" : "Keep me logged in for 7 days"}
+            >
+              Remember me for {rememberMe ? "30 days" : "7 days"}
             </label>
           </div>
           

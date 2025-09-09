@@ -12,11 +12,11 @@ export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
 
-  const handleLogin = async (email: string, password: string) => {
+  const handleLogin = async (email: string, password: string, rememberMe: boolean) => {
     setLoading(true);
     setError('');
 
-    const result = await login(email, password);
+    const result = await login(email, password, rememberMe);
     
     if (result.success) {
       // Redirect to dashboard or admin panel

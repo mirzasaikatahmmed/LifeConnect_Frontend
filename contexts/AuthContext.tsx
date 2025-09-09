@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import axios from 'axios';
+import { TokenStorage } from '@/lib/tokenStorage';
 
 interface User {
   id: string;
@@ -13,7 +14,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
   loading: boolean;
   isAuthenticated: boolean;
@@ -28,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Check for existing token on mount
-    const savedToken = localStorage.getItem('token');
+    const savedToken = TokenStorage.getToken();
     if (savedToken) {
       setToken(savedToken);
       // Set up axios default header
@@ -52,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
+  const login = async (email: string, password: string, rememberMe: boolean = false): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
         email,
@@ -63,9 +64,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.data && response.data.access_token) {
         const { access_token, admin } = response.data;
         
-        // Store token
+        // Store token with expiration based on rememberMe
         setToken(access_token);
-        localStorage.setItem('token', access_token);
+        TokenStorage.setToken(access_token, rememberMe);
         
         // Set up axios default header
         axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
@@ -98,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('token');
+    TokenStorage.removeToken();
     delete axios.defaults.headers.common['Authorization'];
   };
 
