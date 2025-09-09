@@ -13,6 +13,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   const { isAuthenticated } = useAuth();
   const pathname = usePathname();
 
+
   // Define routes where header and footer should be hidden
   const hideHeaderFooterRoutes = [
     '/login',
