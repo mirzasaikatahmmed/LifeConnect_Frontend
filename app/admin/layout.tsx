@@ -89,11 +89,36 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('Admin Layout - User data:', JSON.stringify(user, null, 2)); // Debug log
+    console.log('Admin Layout - Is authenticated:', isAuthenticated); // Debug log
+    console.log('Admin Layout - Current pathname:', pathname); // Debug log
+    
     // Allow access to register page without authentication
     if (!isAuthenticated && !pathname.includes('/register')) {
-      router.push('/login');
+      console.log('Admin Layout - Not authenticated, redirecting to login');
+      router.replace('/login');
+      return;
     }
-  }, [isAuthenticated, router, pathname]);
+
+    // Check if user has admin role for admin routes
+    if (isAuthenticated && pathname.startsWith('/admin') && !pathname.includes('/register')) {
+      console.log('Admin Layout - Checking role for admin access. User role:', user?.role);
+      if (user?.role !== 'admin') {
+        console.log('Admin Layout - User is not admin, redirecting based on role');
+        // Redirect non-admin users to their appropriate dashboard using replace to prevent back navigation
+        if (user?.role === 'manager') {
+          console.log('Admin Layout - Redirecting manager to manager dashboard');
+          router.replace('/manager/Dashboard');
+        } else {
+          console.log('Admin Layout - Redirecting to default dashboard');
+          router.replace('/dashboard');
+        }
+        return; // Exit early to prevent rendering admin layout
+      } else {
+        console.log('Admin Layout - User is admin, allowing access');
+      }
+    }
+  }, [isAuthenticated, router, pathname, user]);
 
   const handleLogout = () => {
     logout();
@@ -115,6 +140,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Simple layout for register page
   if (pathname.includes('/register')) {
     return <>{children}</>;
+  }
+
+  // Don't render admin layout for non-admin users
+  if (isAuthenticated && pathname.startsWith('/admin') && !pathname.includes('/register') && user?.role !== 'admin') {
+    return null; // Return null while redirecting to prevent flash of admin layout
   }
 
   const sidebarContent = (

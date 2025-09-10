@@ -24,7 +24,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   // Check if current route should hide header/footer
   const shouldHideHeaderFooter = hideHeaderFooterRoutes.some(route => 
     pathname.startsWith(route)
-  ) || (isAuthenticated && pathname.startsWith('/admin'));
+  ) || (isAuthenticated && (pathname.startsWith('/admin') || pathname.startsWith('/manager')));
 
   return (
     <>

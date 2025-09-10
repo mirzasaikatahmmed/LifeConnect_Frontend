@@ -14,7 +14,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; message?: string }>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; message?: string; user?: User; role?: string }>;
   logout: () => void;
   loading: boolean;
   isAuthenticated: boolean;
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async (email: string, password: string, rememberMe: boolean = false): Promise<{ success: boolean; message?: string }> => {
+  const login = async (email: string, password: string, rememberMe: boolean = false): Promise<{ success: boolean; message?: string; user?: User; role?: string }> => {
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
         email,
@@ -62,6 +62,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Backend returns { access_token, admin } structure
       if (response.data && response.data.access_token) {
+        console.log('Full response from backend:', JSON.stringify(response.data, null, 2)); // Debug log
+        
         const { access_token, admin } = response.data;
         
         // Store token with expiration based on rememberMe
@@ -73,12 +75,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         // Store user data
         if (admin) {
-          setUser({
+          console.log('Admin object from backend:', JSON.stringify(admin, null, 2)); // Debug log
+          
+          // Handle different role formats from backend - try all possible ways
+          let userRole = null;
+          
+          // Try different possible role locations
+          if (admin.role && typeof admin.role === 'object' && admin.role.name) {
+            userRole = admin.role.name;
+            console.log('Found role in admin.role.name:', userRole);
+          } else if (admin.role && typeof admin.role === 'string') {
+            userRole = admin.role;
+            console.log('Found role in admin.role (string):', userRole);
+          } else if (admin.userType) {
+            userRole = admin.userType;
+            console.log('Found role in admin.userType:', userRole);
+          } else if (admin.roleId) {
+            // If we only have roleId, map it to role name
+            userRole = admin.roleId === 1 ? 'admin' : admin.roleId === 2 ? 'manager' : 'user';
+            console.log('Mapped roleId to role name:', admin.roleId, '->', userRole);
+          }
+          
+          console.log('Final extracted role:', userRole); // Debug log
+          
+          const userData = {
             id: admin.id,
             email: admin.email,
             name: admin.name,
-            role: admin.userType || admin.role?.name
-          });
+            role: userRole
+          };
+          setUser(userData);
+          
+          return { 
+            success: true, 
+            user: userData,
+            role: userRole 
+          };
         }
 
         return { success: true };
