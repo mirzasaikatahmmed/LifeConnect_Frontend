@@ -1,6 +1,7 @@
 "use client"
+
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, Heart, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -35,16 +36,21 @@ const LoginPage: React.FC = () => {
 
     try {
       const result = await login(data.email, data.password, data.rememberMe);
-      
       if (result.success) {
         // Redirect based on user role
+        
         const userRole = result.role || result.user?.role;
         
         // Store user role in localStorage
         if (userRole) {
           localStorage.setItem('userRole', userRole);
         }
-        
+
+          if (result.user) {
+          localStorage.setItem('user', JSON.stringify(result.user));
+          }
+
+      console.log('Saved userRole:', localStorage.getItem('userRole'));
         console.log('User role:', userRole); // Debug log
         console.log('Full result:', result); // Debug log
         
@@ -76,6 +82,7 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     handleSubmit(onSubmit)(e);
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-pink-50 flex items-center justify-center p-4">

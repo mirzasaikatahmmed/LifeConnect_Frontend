@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { 
   Bell, 
   User, 
@@ -16,11 +16,57 @@ import {
   ChevronDown
 } from 'lucide-react';
 import Link from 'next/link';
+import {Role ,UserData,ApiResponse} from '@/app/manager/Types/user';
+// interface Role {
+//   id: number;
+//   name: string;
+//   description: string;
+//   permissions: string[];
+//   isActive: boolean;
+//   createdAt: string;
+//   updatedAt: string;
+// }
 
+// // Define the user type based on your API response
+// interface UserData {
+//   id: number;
+//   email: string;
+//   name: string;
+//   phoneNumber: string;
+//   bloodType: string;
+//   userType: string;
+//   role: Role;
+//   roleId: number;
+//   isActive: boolean;
+//   isVerified: boolean;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+
+// // Define the complete API response structure
+// interface ApiResponse {
+//   access_token: string;
+//   admin: UserData;
+// }
 export default function Navigation() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notificationCount] = useState(5);
+  const [user, setUser] = useState<UserData|null>(null);
+
+useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    try {
+      const parsed = JSON.parse(storedUser);
+      console.log("Parsed User:", parsed);
+      setUser(parsed); // ✅ সরাসরি parsed সেট করবেন
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+    }
+  }
+}, []);
+
 
   const navigationItems = [
     { name: 'Dashboard', icon: Home, href: '/dashboard', active: true },
@@ -30,7 +76,7 @@ export default function Navigation() {
     { name: 'Analytics', icon: BarChart3, href: '/analytics' },
     { name: 'Settings', icon: Settings, href: '/settings' }
   ];
-
+  console.log("User state:", user);
   return (
     <nav className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -101,8 +147,8 @@ export default function Navigation() {
                   <User className="h-4 w-4 text-red-700" />
                 </div>
                 <div className="hidden xl:block text-left">
-                  <div className="font-semibold text-gray-900 text-xs">Dr. Ahmed</div>
-                  <div className="text-xs text-gray-500">Manager</div>
+                  <div className="font-semibold text-gray-900 text-xs">    {user?.name || 'Loading...'}</div>
+                  <div className="text-xs text-gray-500">manager</div>
                 </div>
                 <ChevronDown className={`h-3 w-3 text-gray-400 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -116,8 +162,8 @@ export default function Navigation() {
                         <User className="h-5 w-5 text-red-600" />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">Dr. Ahmed Rahman</div>
-                        <div className="text-sm text-gray-500">ahmed@bloodconnect.org</div>
+                        <div className="font-medium text-gray-900">{user?.name}</div>
+                        <div className="text-sm text-gray-500">{user?.email}</div>
                       </div>
                     </div>
                   </div>

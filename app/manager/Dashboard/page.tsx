@@ -1,6 +1,6 @@
 // File: app/manager/dashboard/page.tsx (Updated version)
 "use client"
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { 
   Plus, 
   Edit3, 
@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link'; // Add this import
+import axios from 'axios';
 
 export default function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -45,12 +46,53 @@ export default function Dashboard() {
 };
 
   // Sample data
-  const stats = {
-    totalDonors: 1247,
-    activeRequests: 23,
-    completedToday: 8,
-    criticalRequests: 5
-  };
+ const [stats, setStats] = useState({
+    totalDonors: 0,
+    activeRequests: 0,
+    completedToday: 0,
+    criticalRequests: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+ //fetch data with axios
+    useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        
+        // Get token from localStorage
+        const token = localStorage.getItem('authToken'); // আপনার token key অনুযায়ী change করুন
+        
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/request/mycount`, {
+          headers: {
+            // 'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // Update stats with backend data
+        setStats(prevStats => ({
+          ...prevStats,
+          activeRequests: response.data.totalRequests || 0
+          // অন্যান্য stats গুলো এখনো static রাখলাম, পরে backend থেকে নিতে পারবেন
+        }));
+
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        // Error handling - default values রাখুন
+        setStats({
+          totalDonors: 1247,
+          activeRequests: 0, // backend error হলে 0 দেখাবে
+          completedToday: 8,
+          criticalRequests: 5
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []); // Component mount এ একবার run হবে
 
   const bloodRequests = [
      {
