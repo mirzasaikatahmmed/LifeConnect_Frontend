@@ -46,6 +46,7 @@ export default function Dashboard() {
 };
 
   // Sample data
+ const [bloodRequests, setBloodRequests] = useState<BloodRequest[]>([]);
  const [stats, setStats] = useState({
     totalDonors: 0,
     activeRequests: 0,
@@ -61,14 +62,38 @@ export default function Dashboard() {
         setLoading(true);
         
         // Get token from localStorage
-        const token = localStorage.getItem('authToken'); // আপনার token key অনুযায়ী change করুন
-        
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/request/mycount`, {
-          headers: {
-            // 'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+        // const token = localStorage.getItem('authToken'); // আপনার token key অনুযায়ী change করুন
+
+        const storedtoken=localStorage.getItem("lifeconnect_auth_token");
+        let token:string|null=null
+        if(storedtoken){
+          try{
+             const parsed=JSON.parse(storedtoken);
+             token=parsed.token;
+          }catch(error){
+            console.log("Token is not be parsed from string")
           }
-        });
+        }
+        console.log("Token",token);
+        if (!token) {
+        alert("No token found!");
+        return;
+        }
+       
+const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/request/mycount`, {
+  headers: {
+    // 'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  }
+});
+
+        const Bloodrequest=await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/request/allrequests`,{
+          headers:{
+            Authorization: `Bearer ${token}`,
+            "Content-Type": 'application/json'
+          }
+        })
+        setBloodRequests(Bloodrequest.data)
 
         // Update stats with backend data
         setStats(prevStats => ({
@@ -94,60 +119,12 @@ export default function Dashboard() {
     fetchStats();
   }, []); // Component mount এ একবার run হবে
 
-  const bloodRequests = [
-     {
-    id: 1,
-    patientName: 'রহিম উদ্দিন',
-    bloodType: 'O+',
-    urgencyLevel: 'critical',
-    hospitalName: 'ঢাকা মেডিকেল কলেজ',
-    hospitalAddress: 'Dhaka Address Here',
-    neededBy: '2025-01-15',
-    unitsNeeded: 2,
-    status: 'active',
-    createdAt: '2025-01-10',
-  },
-  {
-    id: 2,
-    patientName: 'ফাতেমা খাতুন',
-    bloodType: 'A+',
-    urgencyLevel: 'medium',
-    hospitalName: 'বঙ্গবন্ধু শেখ মুজিব মেডিকেল বিশ্ববিদ্যালয়',
-    hospitalAddress: 'Dhaka Address Here',
-    neededBy: '2025-01-14',
-    unitsNeeded: 1,
-    status: 'fulfilled',
-    createdAt: '2025-01-10',
-  },
-  {
-    id: 3,
-    patientName: 'করিম মিয়া',
-    bloodType: 'B-',
-    urgencyLevel: 'high',
-    hospitalName: 'স্কয়ার হাসপাতাল',
-    hospitalAddress: 'Dhaka Address Here',
-    neededBy: '2025-01-16',
-    unitsNeeded: 3,
-    status: 'active',
-    createdAt: '2025-01-11',
-  },{
-    id: 4,
-    patientName: 'করিম মিয়া',
-    bloodType: 'B-',
-    urgencyLevel: 'high',
-    hospitalName: 'স্কয়ার হাসপাতাল',
-    hospitalAddress: 'Dhaka Address Here',
-    neededBy: '2025-01-16',
-    unitsNeeded: 3,
-    status: 'active',
-    createdAt: '2025-01-11',
-  }
-  ];
    const router = useRouter();
    const handleCreate = () => {
     setShowCreateModal(false);
     router.push("/manager/CreateBloodRequest");
   };
+
 
   const getStatusColor = (status:string) => {
     switch (status) {
@@ -168,10 +145,10 @@ export default function Dashboard() {
   };
 
   const filteredRequests = bloodRequests.filter(request => {
-    const matchesSearch = request.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch =  (request.id.toString().includes(searchTerm)) ||
                          request.bloodType.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          request.hospitalName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || request.status.toLowerCase() === filterStatus;
+    const matchesFilter = filterStatus === 'all' || (request.status||" ").toLowerCase() === filterStatus;
     return matchesSearch && matchesFilter;
   });
 
@@ -351,7 +328,7 @@ export default function Dashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(request.status||"")}`}>
                         {request.status}
                       </span>
                     </td>

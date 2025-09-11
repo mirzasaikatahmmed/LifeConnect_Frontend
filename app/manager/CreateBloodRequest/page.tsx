@@ -116,24 +116,77 @@ export default function CreateBloodRequest() {
 
     setIsSubmitting(true);
     
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+        try {
+      // Prepare the data for API request
+      const requestData = {
+        bloodType: formData.bloodType,
+        urgencyLevel: formData.urgencyLevel,
+        hospitalName: formData.hospitalName,
+        hospitalAddress: formData.hospitalAddress,
+        neededBy: new Date(formData.neededBy!).toISOString(), // Convert to ISO string
+        unitsNeeded: Number(formData.unitsNeeded) || 1,
+      };
+
+      // Get token from localStorage or cookies (adjust based on your auth implementation)
+      // const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const storedtoken=localStorage.getItem('lifeconnect_auth_token');
+       let token:string|null=null;
+      if(storedtoken){
+        try{
+          const parsed=JSON.parse(storedtoken)
+          token=parsed.token
+        }catch(error){
+          console.error('Failed to parse token from localStorage:', error);
+        }
+      }
+
+      if (!token) {
+        alert('You need to be logged in to create a blood request');
+        // router.push('/login'); // Redirect to login if not authenticated
+        return;
+      }
+
+      // Make API request to your backend
+      const response = await fetch('http://localhost:4000/manager/createbloodrequest', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Include auth token
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create blood request');
+      }
+
+      const result = await response.json();
+      console.log('Blood request created successfully:', result);
       
-      // Here you would make the actual API call to create the blood request
-      console.log('Creating blood request:', formData);
-      
-      // Show success and redirect back to dashboard
+      // Show success message and redirect back to dashboard
       alert('Blood request created successfully!');
-      router.push('/dashboard');
+      router.push('/manager/Dashboard');
+      
     } catch (error) {
       console.error('Error creating blood request:', error);
-      alert('Failed to create blood request. Please try again.');
+      
+      // Handle different types of errors
+      if (error instanceof Error) {
+        if (error.message.includes('401') || error.message.includes('unauthorized')) {
+          alert('Your session has expired. Please login again.');
+          router.push('/login');
+        } else {
+          alert(`Failed to create blood request: ${error.message}`);
+        }
+      } else {
+        alert('Failed to create blood request. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
-
+// -------------
   const getUrgencyStyle = (urgency: string) => {
     const level = urgencyLevels.find(l => l.value === urgency);
     return level ? `${level.color} ${level.bgColor}` : '';
@@ -384,3 +437,4 @@ export default function CreateBloodRequest() {
     </div>
   );
 }
+

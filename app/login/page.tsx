@@ -50,6 +50,8 @@ const LoginPage: React.FC = () => {
           localStorage.setItem('user', JSON.stringify(result.user));
           }
 
+
+
       console.log('Saved userRole:', localStorage.getItem('userRole'));
         console.log('User role:', userRole); // Debug log
         console.log('Full result:', result); // Debug log

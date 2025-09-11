@@ -2,6 +2,7 @@
 "use client"
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import axios from 'axios';
 import { 
   ArrowLeft, 
   Edit3, 
@@ -40,85 +41,228 @@ export default function BloodRequestDetails() {
   const router = useRouter();
   const [request, setRequest] = useState<BloodRequest | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Dashboard এর সাথে same data + additional fields for details view
-  const bloodRequests = [
-     {
-    id: 1,
-    patientName: 'রহিম উদ্দিন',
-    bloodType: 'O+',
-    urgencyLevel: 'critical',
-    hospitalName: 'ঢাকা মেডিকেল কলেজ',
-    hospitalAddress: 'Dhaka Address Here',
-    neededBy: '2025-01-15',
-    unitsNeeded: 2,
-    status: 'active',
-    createdAt: '2025-01-10',
-  },
-  {
-    id: 2,
-    patientName: 'ফাতেমা খাতুন',
-    bloodType: 'A+',
-    urgencyLevel: 'medium',
-    hospitalName: 'বঙ্গবন্ধু শেখ মুজিব মেডিকেল বিশ্ববিদ্যালয়',
-    hospitalAddress: 'Dhaka Address Here',
-    neededBy: '2025-01-14',
-    unitsNeeded: 1,
-    status: 'fulfilled',
-    createdAt: '2025-01-10',
-  },
-  {
-    id: 3,
-    patientName: 'করিম মিয়া',
-    bloodType: 'B-',
-    urgencyLevel: 'high',
-    hospitalName: 'স্কয়ার হাসপাতাল',
-    hospitalAddress: 'Dhaka Address Here',
-    neededBy: '2025-01-16',
-    unitsNeeded: 3,
-    status: 'active',
-    createdAt: '2025-01-11',
-  },{
-    id: 4,
-    patientName: 'করিম মিয়া',
-    bloodType: 'B-',
-    urgencyLevel: 'high',
-    hospitalName: 'স্কয়ার হাসপাতাল',
-    hospitalAddress: 'Dhaka Address Here',
-    neededBy: '2025-01-16',
-    unitsNeeded: 3,
-    status: 'active',
-    createdAt: '2025-01-11',
-  }
-  ];
+  // const bloodRequests = [
+  //    {
+  //   id: 1,
+  //   patientName: 'রহিম উদ্দিন',
+  //   bloodType: 'O+',
+  //   urgencyLevel: 'critical',
+  //   hospitalName: 'ঢাকা মেডিকেল কলেজ',
+  //   hospitalAddress: 'Dhaka Address Here',
+  //   neededBy: '2025-01-15',
+  //   unitsNeeded: 2,
+  //   status: 'active',
+  //   createdAt: '2025-01-10',
+  // },
+  // {
+  //   id: 2,
+  //   patientName: 'ফাতেমা খাতুন',
+  //   bloodType: 'A+',
+  //   urgencyLevel: 'medium',
+  //   hospitalName: 'বঙ্গবন্ধু শেখ মুজিব মেডিকেল বিশ্ববিদ্যালয়',
+  //   hospitalAddress: 'Dhaka Address Here',
+  //   neededBy: '2025-01-14',
+  //   unitsNeeded: 1,
+  //   status: 'fulfilled',
+  //   createdAt: '2025-01-10',
+  // },
+  // {
+  //   id: 3,
+  //   patientName: 'করিম মিয়া',
+  //   bloodType: 'B-',
+  //   urgencyLevel: 'high',
+  //   hospitalName: 'স্কয়ার হাসপাতাল',
+  //   hospitalAddress: 'Dhaka Address Here',
+  //   neededBy: '2025-01-16',
+  //   unitsNeeded: 3,
+  //   status: 'active',
+  //   createdAt: '2025-01-11',
+  // },{
+  //   id: 4,
+  //   patientName: 'করিম মিয়া',
+  //   bloodType: 'B-',
+  //   urgencyLevel: 'high',
+  //   hospitalName: 'স্কয়ার হাসপাতাল',
+  //   hospitalAddress: 'Dhaka Address Here',
+  //   neededBy: '2025-01-16',
+  //   unitsNeeded: 3,
+  //   status: 'active',
+  //   createdAt: '2025-01-11',
+  // }
+  // ];
+const getAuthToken = () => {
+    const storedToken = localStorage.getItem("lifeconnect_auth_token");
+    let token: string | null = null;
+    
+    if (storedToken) {
+      try {
+        const parsed = JSON.parse(storedToken);
+        token = parsed.token;
+      } catch (error) {
+        console.log("Token cannot be parsed from string");
+      }
+    }
+    
+    console.log("Token", token);
+    return token;
+  };
+
+  // Check authentication helper function
+  const checkAuth = () => {
+    const token = getAuthToken();
+    if (!token) {
+      alert("No token found!");
+      // router.push('/login');
+      return false;
+    }
+    return true;
+  };
+
+  const fetchBloodRequestById = async (requestId: string) => {
+    try {
+      if (!checkAuth()) return;
+
+      const token = getAuthToken();
+      
+      // First, get all requests and find the specific one
+      // If you have a dedicated endpoint for single request, use that instead
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/request/allrequests`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const requests = response.data;
+      const foundRequest = requests.find((req: BloodRequest) => req.id === parseInt(requestId));
+      
+      if (foundRequest) {
+        setRequest(foundRequest);
+      } else {
+        setError('Request not found');
+      }
+
+    } catch (err: any) {
+      console.error('Error fetching blood request:', err);
+      
+      if (err.response?.status === 401) {
+        localStorage.removeItem('lifeconnect_auth_token');
+        alert("Session expired. Please login again.");
+        router.push('/login');
+      } else if (err.response?.status === 404) {
+        setError('Request not found');
+      } else {
+        setError('Failed to load request details');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Simulate API call delay
-    const loadData = () => {
-      try {
-        const requestId = parseInt(params.id as string);
-        console.log('Looking for request ID:', requestId); // Debug log
-        
-        const foundRequest = bloodRequests.find(req => req.id === requestId);
-        console.log('Found request:', foundRequest); // Debug log
-        
-        if (foundRequest) {
-          setRequest(foundRequest);
-        } else {
-          console.log('No request found with ID:', requestId);
-          setRequest(null);
-        }
-      } catch (error) {
-        console.error('Error loading request:', error);
-        setRequest(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Small delay to simulate real API call
-    setTimeout(loadData, 500);
+    if (params.id) {
+      fetchBloodRequestById(params.id as string);
+    }
   }, [params.id]);
+const updateRequestStatus = async (newStatus: string) => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        alert("No token found!");
+        return;
+      }
+      
+      // Replace with your actual update endpoint
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/manager/updatebloodrequest/${request?.id}`, 
+        { status: newStatus },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      // Update local state
+      if (request) {
+        setRequest({ ...request, status: newStatus });
+      }
+      
+      alert(`Request status updated to ${newStatus}`);
+    } catch (error: any) {
+      console.error('Error updating status:', error);
+      if (error.response?.status === 401) {
+        localStorage.removeItem('lifeconnect_auth_token');
+        alert("Session expired. Please login again.");
+        router.push('/login');
+      } else {
+        alert('Failed to update status');
+      }
+    }
+  };
+
+ const deleteRequest = async () => {
+    if (!confirm(`Are you sure you want to delete this  ${request?.id} no account ?`)) return;
+    
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        alert("No token found!");
+        return;
+      }
+      
+      // Replace with your actual delete endpoint
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/manager/deletebloodrequest/${request?.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      alert('Request deleted successfully');
+      router.push('/manager/Dashboard');
+    } catch (error: any) {
+      console.error('Error deleting request:', error);
+      if (error.response?.status === 401) {
+        localStorage.removeItem('lifeconnect_auth_token');
+        alert("Session expired. Please login again.");
+        router.push('/login');
+      } else {
+        alert('Failed to delete request');
+      }
+    }
+  };
+  // -----------
+  // useEffect(() => {
+  //   // Simulate API call delay
+  //   const loadData = () => {
+  //     try {
+  //       const requestId = parseInt(params.id as string);
+  //       console.log('Looking for request ID:', requestId); // Debug log
+        
+  //       const foundRequest = bloodRequests.find(req => req.id === requestId);
+  //       console.log('Found request:', foundRequest); // Debug log
+        
+  //       if (foundRequest) {
+  //         setRequest(foundRequest);
+  //       } else {
+  //         console.log('No request found with ID:', requestId);
+  //         setRequest(null);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error loading request:', error);
+  //       setRequest(null);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   // Small delay to simulate real API call
+  //   setTimeout(loadData, 500);
+  // }, [params.id]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -201,7 +345,7 @@ export default function BloodRequestDetails() {
               <span>Edit Request</span>
             </button>
             <button 
-              onClick={() => {
+              onClick={() => { deleteRequest()
                 if (confirm('Are you sure you want to delete this request?')) {
                   console.log('Deleting request:', request.id);
                   router.push('/manager/Dashboard');
@@ -237,7 +381,7 @@ export default function BloodRequestDetails() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-500">Patient Name</label>
-                  <p className="mt-1 text-lg font-medium text-gray-900">{request.patientName}</p>
+                  <p className="mt-1 text-lg font-medium text-gray-900">{request.id}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-500">Age</label>
@@ -349,7 +493,7 @@ export default function BloodRequestDetails() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
               <div className="space-y-3">
                 <button 
-                  onClick={() => {
+                  onClick={() => { updateRequestStatus("fulfilled")
                     console.log('Mark as Fulfilled:', request.id);
                     alert('Request marked as fulfilled!');
                   }}
