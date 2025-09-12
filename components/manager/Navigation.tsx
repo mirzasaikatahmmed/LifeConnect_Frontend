@@ -17,37 +17,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import {Role ,UserData,ApiResponse} from '@/app/manager/Types/user';
-// interface Role {
-//   id: number;
-//   name: string;
-//   description: string;
-//   permissions: string[];
-//   isActive: boolean;
-//   createdAt: string;
-//   updatedAt: string;
-// }
 
-// // Define the user type based on your API response
-// interface UserData {
-//   id: number;
-//   email: string;
-//   name: string;
-//   phoneNumber: string;
-//   bloodType: string;
-//   userType: string;
-//   role: Role;
-//   roleId: number;
-//   isActive: boolean;
-//   isVerified: boolean;
-//   createdAt: string;
-//   updatedAt: string;
-// }
-
-// // Define the complete API response structure
-// interface ApiResponse {
-//   access_token: string;
-//   admin: UserData;
-// }
 export default function Navigation() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,11 +26,14 @@ export default function Navigation() {
 
 useEffect(() => {
   const storedUser = localStorage.getItem("user");
+  console.log("DATA:",storedUser)
+ 
   if (storedUser) {
     try {
       const parsed = JSON.parse(storedUser);
       console.log("Parsed User:", parsed);
       setUser(parsed); // ✅ সরাসরি parsed সেট করবেন
+      console.log("USERID:",user?.id);
     } catch (error) {
       console.error("Error parsing user data:", error);
     }
@@ -69,7 +42,7 @@ useEffect(() => {
 
 
   const navigationItems = [
-    { name: 'Dashboard', icon: Home, href: '/dashboard', active: true },
+    { name: 'Dashboard', icon: Home, href: `/manager/Dashboard`, active: true },
     { name: 'Donors', icon: Users, href: '/donors' },
     { name: 'Campaigns', icon: Calendar, href: '/campaigns' },
     { name: 'Blood Banks', icon: MapPin, href: '/blood-banks' },
@@ -97,7 +70,7 @@ useEffect(() => {
             {/* Desktop Navigation */}
             <div className="hidden md:ml-8 md:flex md:space-x-1">
               {navigationItems.map((item) => (
-                <a
+                <Link
                   key={item.name}
                   href={item.href}
                   className={`${
@@ -108,7 +81,7 @@ useEffect(() => {
                 >
                   <item.icon className="h-4 w-4" />
                   <span>{item.name}</span>
-                </a>
+                </Link>
               ))}
             </div>
           </div>
