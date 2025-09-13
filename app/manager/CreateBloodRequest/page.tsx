@@ -454,7 +454,7 @@ import {
   Bell
 } from 'lucide-react';
 import Pusher from 'pusher-js';
-
+import axios from 'axios';
 // Zod validation schema
 const createBloodRequestSchema = z.object({
   bloodType: z.string()
@@ -635,22 +635,18 @@ export default function CreateBloodRequest() {
         return;
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/manager/createbloodrequest`, {
-        method: 'POST',
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/manager/createbloodrequest`,
+      requestData,
+      {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create blood request');
       }
+    );
+    console.log("Blood request created successfully:", response.data);
 
-      const result = await response.json();
-      console.log('Blood request created successfully:', result);
+
       
       // After successful creation, trigger Pusher notification on backend:
       // The backend should publish to Pusher channel after creating the request
