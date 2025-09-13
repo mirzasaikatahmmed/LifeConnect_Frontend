@@ -64,7 +64,7 @@ export default function Dashboard() {
         // Get token from localStorage
         // const token = localStorage.getItem('authToken'); // আপনার token key অনুযায়ী change করুন
 
-        const storedtoken=localStorage.getItem("lifeconnect_auth_token");
+        const storedtoken=localStorage.getItem("lifeconnect-secret-key");
         let token:string|null=null
         if(storedtoken){
           try{

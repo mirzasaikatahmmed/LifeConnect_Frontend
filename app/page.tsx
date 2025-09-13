@@ -3,10 +3,27 @@
 import { Typography, Container, Grid, Box } from '@mui/material';
 import { ArrowForward, People, Security, Speed, Support } from '@mui/icons-material';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button, Card, CardBody } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { getDefaultDashboardPath } from '@/lib/authUtils';
 
 export default function Home() {
+  const router = useRouter();
+  const { isAuthenticated, user } = useAuth();
+
+  const handleAuthAction = (action: 'login' | 'register') => {
+    // If user is already authenticated, redirect to their dashboard
+    if (isAuthenticated && user?.role) {
+      const dashboardPath = getDefaultDashboardPath(user.role);
+      router.push(dashboardPath);
+    } else {
+      // Otherwise, go to the requested auth page
+      router.push(`/${action}`);
+    }
+  };
+
   const features = [
     {
       icon: People,
@@ -67,17 +84,22 @@ export default function Home() {
               'flex flex-col sm:flex-row gap-4 justify-center mt-8',
               'animate-slide-up delay-300'
             )}>
-              <Link href="/register">
-                <Button variant="primary" size="lg" className="group">
-                  Get Started Today
-                  <ArrowForward className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button variant="outline" size="lg">
-                  Sign In
-                </Button>
-              </Link>
+              <Button 
+                variant="primary" 
+                size="lg" 
+                className="group"
+                onClick={() => handleAuthAction('register')}
+              >
+                {isAuthenticated ? 'Go to Dashboard' : 'Get Started Today'}
+                <ArrowForward className="ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => handleAuthAction('login')}
+              >
+                {isAuthenticated ? 'Go to Dashboard' : 'Sign In'}
+              </Button>
             </div>
           </div>
         </Container>
@@ -149,18 +171,17 @@ export default function Home() {
           <Typography variant="h6" className="mb-8 opacity-90">
             Join thousands of users who are already connecting and growing with LifeConnect.
           </Typography>
-          <Link href="/register">
-            <Button 
-              variant="secondary" 
-              size="lg" 
-              className={cn(
-                'bg-white text-primary-600 hover:bg-gray-50',
-                'hover:shadow-2xl hover:scale-105'
-              )}
-            >
-              Create Your Free Account
-            </Button>
-          </Link>
+          <Button 
+            variant="secondary" 
+            size="lg" 
+            className={cn(
+              'bg-white text-primary-600 hover:bg-gray-50',
+              'hover:shadow-2xl hover:scale-105'
+            )}
+            onClick={() => handleAuthAction('register')}
+          >
+            {isAuthenticated ? 'Go to Dashboard' : 'Create Your Free Account'}
+          </Button>
         </Container>
       </section>
 

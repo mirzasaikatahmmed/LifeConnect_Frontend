@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import AuthContainer from '@/components/common/AuthContainer';
 import RegisterForm from '@/components/auth/RegisterForm';
+import { useAuth } from '@/contexts/AuthContext';
+import { getDefaultDashboardPath } from '@/lib/authUtils';
 
 interface RegisterData {
   firstName: string;
@@ -19,6 +21,16 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && user?.role) {
+      console.log('User already authenticated, redirecting to dashboard');
+      const dashboardPath = getDefaultDashboardPath(user.role);
+      router.replace(dashboardPath);
+    }
+  }, [isAuthenticated, user, authLoading, router]);
 
   const handleRegister = async (data: RegisterData) => {
     setLoading(true);
@@ -52,6 +64,20 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
+
+  // Show loading spinner while checking authentication or redirecting
+  if (authLoading || (isAuthenticated && user?.role)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">
+            {authLoading ? 'Loading...' : 'Redirecting to dashboard...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <AuthContainer

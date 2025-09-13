@@ -1,20 +1,29 @@
+interface User {
+  id: string;
+  email: string;
+  name?: string;
+  role?: string;
+}
+
 interface TokenData {
   token: string;
   expiresAt: number;
   rememberMe: boolean;
+  user?: User;
 }
 
-export const TOKEN_STORAGE_KEY = 'lifeconnect_auth_token';
+export const TOKEN_STORAGE_KEY = 'lifeconnect-secret-key';
 
 export class TokenStorage {
-  static setToken(token: string, rememberMe: boolean = false): void {
+  static setToken(token: string, rememberMe: boolean = false, user?: User): void {
     const expirationDays = rememberMe ? 30 : 7;
     const expiresAt = Date.now() + (expirationDays * 24 * 60 * 60 * 1000);
     
     const tokenData: TokenData = {
       token,
       expiresAt,
-      rememberMe
+      rememberMe,
+      user
     };
     
     localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(tokenData));
@@ -78,6 +87,27 @@ export class TokenStorage {
       return JSON.parse(stored);
     } catch (error) {
       return null;
+    }
+  }
+
+  static getUser(): User | null {
+    try {
+      const tokenData = this.getTokenInfo();
+      return tokenData?.user || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  static setUser(user: User): void {
+    try {
+      const tokenData = this.getTokenInfo();
+      if (tokenData) {
+        tokenData.user = user;
+        localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(tokenData));
+      }
+    } catch (error) {
+      console.error('Error setting user:', error);
     }
   }
 }

@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { redirect, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, Heart, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { getDefaultDashboardPath } from '@/lib/authUtils';
 
 interface LoginFormData {
   email: string;
@@ -17,7 +18,16 @@ const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, isAuthenticated, user, loading } = useAuth();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!loading && isAuthenticated && user?.role) {
+      console.log('User already authenticated, redirecting to dashboard');
+      const dashboardPath = getDefaultDashboardPath(user.role);
+      router.replace(dashboardPath);
+    }
+  }, [isAuthenticated, user, loading, router]);
 
   const {
     register,
@@ -85,6 +95,19 @@ const LoginPage: React.FC = () => {
     handleSubmit(onSubmit)(e);
   };
 
+  // Show loading spinner while checking authentication or redirecting
+  if (loading || (isAuthenticated && user?.role)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">
+            {loading ? 'Loading...' : 'Redirecting to dashboard...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-pink-50 flex items-center justify-center p-4">

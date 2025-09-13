@@ -94,7 +94,7 @@ export default function BloodRequestDetails() {
   // }
   // ];
 const getAuthToken = () => {
-    const storedToken = localStorage.getItem("lifeconnect_auth_token");
+    const storedToken = localStorage.getItem("lifeconnect-secret-key");
     let token: string | null = null;
     
     if (storedToken) {
@@ -149,7 +149,7 @@ const getAuthToken = () => {
       console.error('Error fetching blood request:', err);
       
       if (err.response?.status === 401) {
-        localStorage.removeItem('lifeconnect_auth_token');
+        localStorage.removeItem('lifeconnect-secret-key');
         alert("Session expired. Please login again.");
         router.push('/login');
       } else if (err.response?.status === 404) {
@@ -195,7 +195,7 @@ const updateRequestStatus = async (newStatus: string) => {
     } catch (error: any) {
       console.error('Error updating status:', error);
       if (error.response?.status === 401) {
-        localStorage.removeItem('lifeconnect_auth_token');
+        localStorage.removeItem('lifeconnect-secret-key');
         alert("Session expired. Please login again.");
         router.push('/login');
       } else {
@@ -227,7 +227,7 @@ const updateRequestStatus = async (newStatus: string) => {
     } catch (error: any) {
       console.error('Error deleting request:', error);
       if (error.response?.status === 401) {
-        localStorage.removeItem('lifeconnect_auth_token');
+        localStorage.removeItem('lifeconnect-secret-key');
         alert("Session expired. Please login again.");
         router.push('/login');
       } else {

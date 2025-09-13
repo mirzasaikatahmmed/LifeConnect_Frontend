@@ -81,7 +81,7 @@ const menuItems = [
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -91,7 +91,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     console.log('Admin Layout - User data:', JSON.stringify(user, null, 2)); // Debug log
     console.log('Admin Layout - Is authenticated:', isAuthenticated); // Debug log
+    console.log('Admin Layout - Loading:', loading); // Debug log
     console.log('Admin Layout - Current pathname:', pathname); // Debug log
+    
+    // Don't redirect while loading
+    if (loading) {
+      console.log('Admin Layout - Still loading, waiting...');
+      return;
+    }
     
     // Allow access to register page without authentication
     if (!isAuthenticated && !pathname.includes('/register')) {
@@ -100,8 +107,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       return;
     }
 
-    // Check if user has admin role for admin routes
-    if (isAuthenticated && pathname.startsWith('/admin') && !pathname.includes('/register')) {
+    // Check if user has admin role for admin routes (only if authenticated and not loading)
+    if (isAuthenticated && !loading && pathname.startsWith('/admin') && !pathname.includes('/register')) {
       console.log('Admin Layout - Checking role for admin access. User role:', user?.role);
       if (user?.role !== 'admin') {
         console.log('Admin Layout - User is not admin, redirecting based on role');
@@ -109,16 +116,19 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         if (user?.role === 'manager') {
           console.log('Admin Layout - Redirecting manager to manager dashboard');
           router.replace('/manager/Dashboard');
+        } else if (user?.role === 'donor' || user?.role === 'user') {
+          console.log('Admin Layout - Redirecting user to user dashboard');
+          router.replace('/user');
         } else {
-          console.log('Admin Layout - Redirecting to default dashboard');
-          router.replace('/dashboard');
+          console.log('Admin Layout - Unknown role, redirecting to login');
+          router.replace('/login');
         }
         return; // Exit early to prevent rendering admin layout
       } else {
         console.log('Admin Layout - User is admin, allowing access');
       }
     }
-  }, [isAuthenticated, router, pathname, user]);
+  }, [isAuthenticated, loading, router, pathname, user]);
 
   const handleLogout = () => {
     logout();
@@ -133,6 +143,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     return pathname === href || pathname.startsWith(href + '/');
   };
 
+  // Show loading spinner while authentication is being determined
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   if (!isAuthenticated && !pathname.includes('/register')) {
     return null;
   }
@@ -143,7 +162,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   // Don't render admin layout for non-admin users
-  if (isAuthenticated && pathname.startsWith('/admin') && !pathname.includes('/register') && user?.role !== 'admin') {
+  if (isAuthenticated && !loading && pathname.startsWith('/admin') && !pathname.includes('/register') && user?.role !== 'admin') {
     return null; // Return null while redirecting to prevent flash of admin layout
   }
 

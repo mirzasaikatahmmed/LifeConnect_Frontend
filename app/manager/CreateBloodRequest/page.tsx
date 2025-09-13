@@ -180,7 +180,7 @@ export default function CreateBloodRequest() {
       
       // In real implementation:
       
-      const storedToken = localStorage.getItem('lifeconnect_auth_token');
+      const storedToken = localStorage.getItem('lifeconnect-secret-key');
       let token: string | null = null;
       if (storedToken) {
         try {

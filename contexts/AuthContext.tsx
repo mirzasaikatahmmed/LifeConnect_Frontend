@@ -30,13 +30,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Check for existing token on mount
     const savedToken = TokenStorage.getToken();
+    const savedUser = TokenStorage.getUser();
+    
     if (savedToken) {
       setToken(savedToken);
       // Set up axios default header
       axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
       
-      // Optionally verify token and get user info
-      verifyToken(savedToken);
+      // Restore user data if available
+      if (savedUser) {
+        setUser(savedUser);
+        setLoading(false);
+      } else {
+        // Try to verify token and get user info if user data is missing
+        verifyToken(savedToken);
+      }
     } else {
       setLoading(false);
     }
@@ -44,11 +52,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const verifyToken = async (token: string) => {
     try {
-      // You can add a verify endpoint call here if needed
-      // For now, we'll just assume the token is valid if it exists
+      // Try to get user info from the API to verify token and restore user data
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.data) {
+        const userData = {
+          id: response.data.id,
+          email: response.data.email,
+          name: response.data.name,
+          role: response.data.role?.name || response.data.role || response.data.userType
+        };
+        setUser(userData);
+        TokenStorage.setUser(userData);
+      }
       setLoading(false);
     } catch (error) {
-      // Token is invalid
+      console.error('Token verification failed:', error);
+      // Token is invalid or user not found, logout
       logout();
     }
   };
@@ -66,14 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         const { access_token, admin } = response.data;
         
-        // Store token with expiration based on rememberMe
-        setToken(access_token);
-        TokenStorage.setToken(access_token, rememberMe);
-        
-        // Set up axios default header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-        
-        // Store user data
+        // Store user data first
         if (admin) {
           console.log('Admin object from backend:', JSON.stringify(admin, null, 2)); // Debug log
           
@@ -105,6 +120,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             role: userRole
           };
           setUser(userData);
+          
+          // Store token with user data
+          setToken(access_token);
+          TokenStorage.setToken(access_token, rememberMe, userData);
+          
+          // Set up axios default header
+          axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
           
           return { 
             success: true, 

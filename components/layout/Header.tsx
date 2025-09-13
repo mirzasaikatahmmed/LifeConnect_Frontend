@@ -4,11 +4,16 @@ import { AppBar, Toolbar, Typography, Button as MuiButton, IconButton, Menu, Men
 import { Menu as MenuIcon, Person, ExitToApp } from '@mui/icons-material';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { getDefaultDashboardPath } from '@/lib/authUtils';
 
 export default function Header() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const router = useRouter();
+  const { isAuthenticated, user } = useAuth();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -16,6 +21,18 @@ export default function Header() {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleAuthAction = (action: 'login' | 'register') => {
+    handleClose(); // Close mobile menu if open
+    // If user is already authenticated, redirect to their dashboard
+    if (isAuthenticated && user?.role) {
+      const dashboardPath = getDefaultDashboardPath(user.role);
+      router.push(dashboardPath);
+    } else {
+      // Otherwise, go to the requested auth page
+      router.push(`/${action}`);
+    }
   };
 
   return (
@@ -58,28 +75,26 @@ export default function Header() {
           </Link>
           
           <div className="flex items-center space-x-3 ml-6 pl-6 border-l border-white/30">
-            <Link href="/login">
-              <MuiButton
-                variant="outlined"
-                className={cn(
-                  'text-white border-white/50 hover:border-white',
-                  'hover:bg-white/10 transition-all duration-200 font-medium'
-                )}
-              >
-                Login
-              </MuiButton>
-            </Link>
-            <Link href="/register">
-              <MuiButton
-                variant="contained"
-                className={cn(
-                  'bg-white text-primary-600 hover:bg-gray-100 hover:shadow-lg hover:-translate-y-0.5',
-                  'transition-all duration-200 font-medium'
-                )}
-              >
-                Sign Up
-              </MuiButton>
-            </Link>
+            <MuiButton
+              variant="outlined"
+              className={cn(
+                'text-white border-white/50 hover:border-white',
+                'hover:bg-white/10 transition-all duration-200 font-medium'
+              )}
+              onClick={() => handleAuthAction('login')}
+            >
+              {isAuthenticated ? 'Dashboard' : 'Login'}
+            </MuiButton>
+            <MuiButton
+              variant="contained"
+              className={cn(
+                'bg-white text-primary-600 hover:bg-gray-100 hover:shadow-lg hover:-translate-y-0.5',
+                'transition-all duration-200 font-medium'
+              )}
+              onClick={() => handleAuthAction('register')}
+            >
+              {isAuthenticated ? 'Dashboard' : 'Sign Up'}
+            </MuiButton>
           </div>
         </div>
 
@@ -116,11 +131,15 @@ export default function Header() {
               <Link href="/contact" className="w-full text-gray-700">Contact</Link>
             </MenuItem>
             <div className="border-t border-gray-100 my-2"></div>
-            <MenuItem onClick={handleClose} className="hover:bg-gray-50">
-              <Link href="/login" className="w-full text-gray-700">Login</Link>
+            <MenuItem onClick={() => handleAuthAction('login')} className="hover:bg-gray-50">
+              <span className="w-full text-gray-700">
+                {isAuthenticated ? 'Go to Dashboard' : 'Login'}
+              </span>
             </MenuItem>
-            <MenuItem onClick={handleClose} className="hover:bg-gray-50">
-              <Link href="/register" className="w-full text-gray-700">Sign Up</Link>
+            <MenuItem onClick={() => handleAuthAction('register')} className="hover:bg-gray-50">
+              <span className="w-full text-gray-700">
+                {isAuthenticated ? 'Go to Dashboard' : 'Sign Up'}
+              </span>
             </MenuItem>
           </Menu>
         </div>

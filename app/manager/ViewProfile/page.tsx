@@ -101,7 +101,7 @@ useEffect(() => {
     }
   }
 
-  const storedToken = localStorage.getItem("lifeconnect_auth_token");
+  const storedToken = localStorage.getItem("lifeconnect-secret-key");
   if (storedToken) {
     try {
       const parsed = JSON.parse(storedToken);
