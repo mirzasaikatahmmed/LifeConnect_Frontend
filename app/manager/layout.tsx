@@ -51,6 +51,7 @@ export default function ManagerRootLayout({
     return null; // Return null while redirecting
   }
 
+  
   return (
     <>
       <Navigation/>

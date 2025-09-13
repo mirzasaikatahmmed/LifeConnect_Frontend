@@ -17,12 +17,16 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import {Role ,UserData,ApiResponse} from '@/app/manager/Types/user';
-
+import Pusher from 'pusher-js';
+import axios from 'axios';
 export default function Navigation() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [notificationCount] = useState(5);
   const [user, setUser] = useState<UserData|null>(null);
+    const [notificationCount, setNotificationCount] = useState(0);
+    const [notifications, setNotifications] = useState<Array<{id: string, message: string, timestamp: Date}>>([]);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [token,setToken]=useState<string|null>(null);
 
 useEffect(() => {
   const storedUser = localStorage.getItem("user");
@@ -40,6 +44,85 @@ useEffect(() => {
   }
 }, []);
 
+// useEffect(() => {
+//   const storedUser = localStorage.getItem("user");
+//   const storedToken = localStorage.getItem("lifeconnect_auth_token");
+
+//   if (storedUser && storedToken) {
+//     try {
+//       const parsedUser = JSON.parse(storedUser);
+//       const parsedToken = JSON.parse(storedToken);
+
+//       setUser(parsedUser);
+//       setToken(parsedToken.token);
+
+//       // fetch updated user data once
+//       axios
+//         .get(`http://localhost:4000/manager/getUserDataById/${parsedUser.id}`, {
+//           headers: { Authorization: `Bearer ${parsedToken.token}` },
+//         })
+//         .then(res => setUser(res.data))
+//         .catch(err => console.error(err));
+
+//     } catch (error) {
+//       console.error("Parsing error:", error);
+//     }
+//   }
+// }, []);
+
+// useEffect(() => {
+//   if (user?.id && token) {
+//     axios
+//       .get(`http://localhost:4000/manager/getUserDataById/${user.id}`, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       })
+//       .then(res => setUser(res.data))
+//       .catch(err => console.error(err));
+//   }
+// }, [user?.id, token]);
+
+  useEffect(() => {
+    const initializePusher = () => {
+      const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
+        cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!
+      });
+
+      const channel = pusher.subscribe('blood-requests');
+      channel.bind('new-request', () => {
+        setNotificationCount(prev => prev + 1);
+        setNotifications(prev => [...prev, {
+          id: Date.now().toString(),
+          message: 'New blood request posted',
+          timestamp: new Date()
+        }]);
+      });
+
+      
+      return () => {
+        channel.unbind_all();
+        channel.unsubscribe();
+      };
+    };
+
+    initializePusher();
+  }, []);
+
+ const triggerNotification = () => {
+    // Simulate receiving a notification
+    setNotificationCount(prev => prev + 1);
+    setNotifications(prev => [...prev, {
+      id: Date.now().toString(),
+      message: 'New blood request posted',
+      timestamp: new Date()
+    }]);
+  };
+
+   const clearNotifications = () => {
+    setNotificationCount(0);
+    setNotifications([]);
+    setShowNotifications(false);
+  };
+ const today = new Date().toISOString().split('T')[0];
 
   const navigationItems = [
     { name: 'Dashboard', icon: Home, href: `/manager/Dashboard`, active: true },
@@ -101,15 +184,75 @@ useEffect(() => {
             </div>
 
             {/* Notifications */}
-            <button className="relative p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+            {/* <button className="relative p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-colors duration-200">
               <Bell className="h-5 w-5" />
               {notificationCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold shadow-md">
                   {notificationCount > 9 ? '9+' : notificationCount}
                 </span>
               )}
-            </button>
+            </button> */}
 
+            <div className="flex items-center space-x-4">
+                      {/* Notification Bell */}
+                      <div className="relative">
+                        <button 
+                          onClick={() => setShowNotifications(!showNotifications)}
+                          className="relative p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                        >
+                          <Bell className="h-5 w-5" />
+                          {notificationCount > 0 && (
+                            <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold shadow-md">
+                              {notificationCount > 9 ? '9+' : notificationCount}
+                            </span>
+                          )}
+                        </button>
+                        
+                        {/* Notification Dropdown */}
+                        {showNotifications && (
+                          <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                            <div className="p-4 border-b border-gray-200">
+                              <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+                                {notificationCount > 0 && (
+                                  <button
+                                    onClick={clearNotifications}
+                                    className="text-sm text-red-600 hover:text-red-700"
+                                  >
+                                    Clear all
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                            <div className="max-h-64 overflow-y-auto">
+                              {notifications.length === 0 ? (
+                                <div className="p-4 text-center text-gray-500">
+                                  No notifications
+                                </div>
+                              ) : (
+                                notifications.map((notification) => (
+                                  <div key={notification.id} className="p-4 border-b border-gray-100 hover:bg-gray-50">
+                                    <div className="flex items-start space-x-3">
+                                      <div className="bg-red-100 p-2 rounded-full flex-shrink-0">
+                                        <Droplets className="h-4 w-4 text-red-600" />
+                                      </div>
+                                      <div className="flex-1">
+                                        <p className="text-sm font-medium text-gray-900">
+                                          {notification.message}
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                          {notification.timestamp.toLocaleTimeString()}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                              )}
+               </div>
+               </div>
             {/* Profile Dropdown */}
             <div className="relative">
               <button
