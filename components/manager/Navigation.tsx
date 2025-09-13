@@ -44,42 +44,6 @@ useEffect(() => {
   }
 }, []);
 
-// useEffect(() => {
-//   const storedUser = localStorage.getItem("user");
-//   const storedToken = localStorage.getItem("lifeconnect_auth_token");
-
-//   if (storedUser && storedToken) {
-//     try {
-//       const parsedUser = JSON.parse(storedUser);
-//       const parsedToken = JSON.parse(storedToken);
-
-//       setUser(parsedUser);
-//       setToken(parsedToken.token);
-
-//       // fetch updated user data once
-//       axios
-//         .get(`http://localhost:4000/manager/getUserDataById/${parsedUser.id}`, {
-//           headers: { Authorization: `Bearer ${parsedToken.token}` },
-//         })
-//         .then(res => setUser(res.data))
-//         .catch(err => console.error(err));
-
-//     } catch (error) {
-//       console.error("Parsing error:", error);
-//     }
-//   }
-// }, []);
-
-// useEffect(() => {
-//   if (user?.id && token) {
-//     axios
-//       .get(`http://localhost:4000/manager/getUserDataById/${user.id}`, {
-//         headers: { Authorization: `Bearer ${token}` },
-//       })
-//       .then(res => setUser(res.data))
-//       .catch(err => console.error(err));
-//   }
-// }, [user?.id, token]);
 
   useEffect(() => {
     const initializePusher = () => {
