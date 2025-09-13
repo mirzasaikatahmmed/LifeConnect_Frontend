@@ -5,7 +5,7 @@ import axios from 'axios';
 import { TokenStorage } from '@/lib/tokenStorage';
 
 interface User {
-  id: string;
+  id: number;
   email: string;
   name?: string;
   role?: string;
@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (response.data) {
         const userData = {
-          id: response.data.id,
+          id: Number(response.data.id),
           email: response.data.email,
           name: response.data.name,
           role: response.data.role?.name || response.data.role || response.data.userType
@@ -114,7 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.log('Final extracted role:', userRole); // Debug log
           
           const userData = {
-            id: admin.id,
+            id: Number(admin.id),
             email: admin.email,
             name: admin.name,
             role: userRole
