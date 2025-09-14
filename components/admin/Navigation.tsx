@@ -79,8 +79,8 @@ export default function AdminNavigation() {
     { name: 'Users', icon: Users, href: '/admin/users' },
     { name: 'Blood Requests', icon: Droplets, href: '/admin/blood-requests' },
     { name: 'System Alerts', icon: AlertTriangle, href: '/admin/alerts' },
-    { name: 'Reports', icon: BarChart3, href: '/admin/reports' },
-    { name: 'Email Center', icon: Mail, href: '/admin/mailer' }
+    { name: 'Reports', icon: BarChart3, href: '/admin/reports' }
+    // { name: 'Email Center', icon: Mail, href: '/admin/mailer' }
     // { name: 'Settings', icon: Settings, href: '/admin/settings' }
   ];
 
