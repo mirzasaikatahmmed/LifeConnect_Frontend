@@ -19,6 +19,8 @@ import Link from 'next/link';
 import {Role ,UserData,ApiResponse} from '@/app/manager/Types/user';
 import Pusher from 'pusher-js';
 import axios from 'axios';
+import router from 'next/router';
+import { useAuth } from '@/contexts/AuthContext';
 export default function Navigation() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -97,6 +99,13 @@ useEffect(() => {
     { name: 'Settings', icon: Settings, href: '/settings' }
   ];
   console.log("User state:", user);
+
+    const { logout } = useAuth();
+    const handleLogout = () => {
+    logout();        // context এর logout execute হবে
+    router.push("/login"); // logout হলে login page redirect
+  };
+
   return (
     <nav className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -257,7 +266,7 @@ useEffect(() => {
                     Account Settings
                   </a>
                   <div className="border-t border-gray-200 mt-2">
-                    <button className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                    <button className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50" onClick={handleLogout}>
                       <svg className="h-4 w-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>
