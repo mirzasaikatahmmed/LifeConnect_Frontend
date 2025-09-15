@@ -107,7 +107,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log('Found role in admin.userType:', userRole);
           } else if (admin.roleId) {
             // If we only have roleId, map it to role name
-            userRole = admin.roleId === 1 ? 'admin' : admin.roleId === 2 ? 'manager' : 'user';
+            userRole = admin.roleId === 1
+              ? 'admin'
+              : admin.roleId === 2
+              ? 'manager'
+              : admin.roleId === 3
+              ? 'donor'
+              : 'user';
             console.log('Mapped roleId to role name:', admin.roleId, '->', userRole);
           }
           
