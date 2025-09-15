@@ -22,6 +22,7 @@ import {
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
+import { usePusherBeams } from '@/hooks/usePusherBeams';
 
 export default function AdminNavigation() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -33,6 +34,24 @@ export default function AdminNavigation() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+
+  // Initialize Pusher Beams for push notifications
+  const { subscribeToInterest, getDeviceInterests, requestNotificationPermission, startBeams } = usePusherBeams();
+
+  // Test function to manually trigger notification permissions
+  const handleTestNotificationPermission = async () => {
+    console.log('Testing notification permission...');
+    try {
+      const hasPermission = await requestNotificationPermission();
+      console.log('Permission granted:', hasPermission);
+      if (hasPermission && user?.id) {
+        await startBeams(user.id.toString());
+        console.log('Pusher Beams started manually');
+      }
+    } catch (error) {
+      console.error('Error testing notification permission:', error);
+    }
+  };
 
   useEffect(() => {
     // Simulate some admin notifications
@@ -192,6 +211,15 @@ export default function AdminNavigation() {
                       ))
                     )}
                   </div>
+                  {/* Test button for notification permissions */}
+                  <div className="border-t border-gray-200 p-4">
+                    <button
+                      onClick={handleTestNotificationPermission}
+                      className="w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      Test Push Notifications
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -227,17 +255,9 @@ export default function AdminNavigation() {
                     </div>
                   </div>
 
-                  <Link href="/admin/profile" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <Link href={`/admin/users/${user?.id}`} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     <User className="h-4 w-4 mr-3" />
                     View Profile
-                  </Link>
-                  {/* <Link href="/admin/settings" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    <Settings className="h-4 w-4 mr-3" />
-                    Admin Settings
-                  </Link> */}
-                  <Link href="/admin/system" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    <Database className="h-4 w-4 mr-3" />
-                    System Info
                   </Link>
                   <div className="border-t border-gray-200 mt-2">
                     <button

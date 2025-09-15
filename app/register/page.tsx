@@ -9,12 +9,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getDefaultDashboardPath } from '@/lib/authUtils';
 
 interface RegisterData {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
-  phone: string;
   password: string;
-  confirmPassword: string;
+  phoneNumber: string;
+  bloodType: string;
+  roleId: number;
 }
 
 export default function RegisterPage() {
@@ -37,19 +37,13 @@ export default function RegisterPage() {
     setError('');
 
     try {
-      const response = await axios.post('/api/auth/register', {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phone: data.phone,
-        password: data.password,
-      });
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, data);
 
-      if (response.data.success) {
+      if (response.data) {
         // Redirect to login or verification page
         router.push('/login?message=Registration successful! Please sign in.');
       } else {
-        setError(response.data.message || 'Registration failed');
+        setError('Registration failed');
       }
     } catch (err: any) {
       if (err.response?.status === 409) {
