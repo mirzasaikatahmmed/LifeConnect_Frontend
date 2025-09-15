@@ -47,37 +47,26 @@ const LoginPage: React.FC = () => {
     try {
       const result = await login(data.email, data.password, data.rememberMe);
       if (result.success) {
-        // Redirect based on user role
-        
+        // Redirect based on user role using the dashboard utility
         const userRole = result.role || result.user?.role;
-        
+
         // Store user role in localStorage
         if (userRole) {
           localStorage.setItem('userRole', userRole);
         }
 
-          if (result.user) {
+        if (result.user) {
           localStorage.setItem('user', JSON.stringify(result.user));
-          }
+        }
 
-
-
-      console.log('Saved userRole:', localStorage.getItem('userRole'));
+        console.log('Saved userRole:', localStorage.getItem('userRole'));
         console.log('User role:', userRole); // Debug log
         console.log('Full result:', result); // Debug log
-        
-        // Redirect immediately based on role
-        if (userRole === 'admin') {
-          console.log('Redirecting to admin dashboard');
-          router.replace('/admin/dashboard');
-        } else if (userRole === 'manager') {
-          console.log('Redirecting to manager dashboard');
-          router.replace('/manager/Dashboard');
-        } else {
-          // Default redirect for other roles or if role is not specified
-          console.log('Unknown role, redirecting to default dashboard');
-          router.replace('/donor/dashboard');
-        }
+
+        // Use the dashboard utility for consistent routing
+        const dashboardPath = getDefaultDashboardPath(userRole);
+        console.log('Redirecting to:', dashboardPath);
+        router.replace(dashboardPath);
         
         reset();
       } else {

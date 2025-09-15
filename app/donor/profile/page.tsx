@@ -160,7 +160,7 @@ const ProfilePage = () => {
                         {!isEditing ? (
                             //current profile information
                             <Grid container spacing={4}>
-                                <Grid item xs={12} md={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Box className="flex items-center space-x-4 p-4 rounded-lg border-b border-gray-200">
                                         <User className="text-red-500" size={24} />
                                         <div>
@@ -169,7 +169,7 @@ const ProfilePage = () => {
                                         </div>
                                     </Box>
                                 </Grid>
-                                <Grid item xs={12} md={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Box className="flex items-center space-x-4 p-4 rounded-lg border-b border-gray-200">
                                         <Mail className="text-red-500" size={24} />
                                         <div>
@@ -178,7 +178,7 @@ const ProfilePage = () => {
                                         </div>
                                     </Box>
                                 </Grid>
-                                <Grid item xs={12} md={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Box className="flex items-center space-x-4 p-4 rounded-lg border-b border-gray-200">
                                         <Phone className="text-red-500" size={24} />
                                         <div>
@@ -187,7 +187,7 @@ const ProfilePage = () => {
                                         </div>
                                     </Box>
                                 </Grid>
-                                <Grid item xs={12} md={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Box className="flex items-center space-x-4 p-4 rounded-lg border-b border-gray-200">
                                         <Droplets className="text-red-500" size={24} />
                                         <div>
@@ -201,7 +201,7 @@ const ProfilePage = () => {
                             // update profile form
                             <form onSubmit={handleUpdate}>
                                 <Grid container spacing={3}>
-                                    <Grid item xs={12} sm={6}>
+                                    <Grid size={{ xs: 12, sm: 6 }}>
                                         <TextField
                                             label="Name"
                                             name="name"
@@ -217,7 +217,7 @@ const ProfilePage = () => {
                                             }}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={6}>
+                                    <Grid size={{ xs: 12, sm: 6 }}>
                                         <TextField
                                             label="Email (Cannot be changed)"
                                             name="email"
@@ -230,7 +230,7 @@ const ProfilePage = () => {
                                             }}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={6}>
+                                    <Grid size={{ xs: 12, sm: 6 }}>
                                         <TextField
                                             label="Phone Number"
                                             name="phoneNumber"
@@ -246,7 +246,7 @@ const ProfilePage = () => {
                                             }}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={6}>
+                                    <Grid size={{ xs: 12, sm: 6 }}>
                                         <TextField
                                             label="Blood Type"
                                             name="bloodType"
