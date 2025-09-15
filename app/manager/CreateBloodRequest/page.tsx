@@ -74,11 +74,20 @@ export default function CreateBloodRequest() {
 
   // Pusher setup
   useEffect(() => {
+    // Only initialize Pusher on client side to avoid hydration mismatch
+    if (typeof window === 'undefined') return;
+
     // In a real app, you would import Pusher like this:
     // import Pusher from 'pusher-js';
-    
+
     // For this demo, we'll simulate Pusher functionality
     const initializePusher = () => {
+      // Check if Pusher key is available
+      if (!process.env.NEXT_PUBLIC_PUSHER_KEY) {
+        console.warn('Pusher key not configured');
+        return;
+      }
+
       const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
         cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!
       });
@@ -93,7 +102,7 @@ export default function CreateBloodRequest() {
         }]);
       });
 
-      
+
       return () => {
         channel.unbind_all();
         channel.unsubscribe();

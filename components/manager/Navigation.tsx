@@ -25,15 +25,22 @@ export default function Navigation() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<UserData|null>(null);
+  const [isClient, setIsClient] = useState(false);
     const [notificationCount, setNotificationCount] = useState(0);
     const [notifications, setNotifications] = useState<Array<{id: string, message: string, timestamp: Date}>>([]);
     const [showNotifications, setShowNotifications] = useState(false);
     const [token,setToken]=useState<string|null>(null);
 
 useEffect(() => {
+  // Mark that we're on the client side
+  setIsClient(true);
+
+  // Ensure we're on the client side to avoid hydration mismatch
+  if (typeof window === 'undefined') return;
+
   const storedUser = localStorage.getItem("user");
   console.log("DATA:",storedUser)
- 
+
   if (storedUser) {
     try {
       const parsed = JSON.parse(storedUser);
@@ -48,7 +55,16 @@ useEffect(() => {
 
 
   useEffect(() => {
+    // Only initialize Pusher on client side to avoid hydration mismatch
+    if (typeof window === 'undefined') return;
+
     const initializePusher = () => {
+      // Check if Pusher key is available
+      if (!process.env.NEXT_PUBLIC_PUSHER_KEY) {
+        console.warn('Pusher key not configured');
+        return;
+      }
+
       const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
         cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!
       });
@@ -63,7 +79,7 @@ useEffect(() => {
         }]);
       });
 
-      
+
       return () => {
         channel.unbind_all();
         channel.unsubscribe();
@@ -236,7 +252,7 @@ useEffect(() => {
                   <User className="h-4 w-4 text-red-700" />
                 </div>
                 <div className="hidden xl:block text-left">
-                  <div className="font-semibold text-gray-900 text-xs">    {user?.name || 'Loading...'}</div>
+                  <div className="font-semibold text-gray-900 text-xs">{isClient ? (user?.name || 'Loading...') : 'Loading...'}</div>
                   <div className="text-xs text-gray-500">manager</div>
                 </div>
                 <ChevronDown className={`h-3 w-3 text-gray-400 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
@@ -251,8 +267,8 @@ useEffect(() => {
                         <User className="h-5 w-5 text-red-600" />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">{user?.name}</div>
-                        <div className="text-sm text-gray-500">{user?.email}</div>
+                        <div className="font-medium text-gray-900">{isClient ? user?.name : 'Loading...'}</div>
+                        <div className="text-sm text-gray-500">{isClient ? user?.email : 'Loading...'}</div>
                       </div>
                     </div>
                   </div>

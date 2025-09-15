@@ -60,7 +60,10 @@ export default function Dashboard() {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        
+
+        // Only run on client side to avoid hydration mismatch
+        if (typeof window === 'undefined') return;
+
         // Get token from localStorage
         // const token = localStorage.getItem('authToken'); // আপনার token key অনুযায়ী change করুন
 
@@ -87,7 +90,7 @@ const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/req
   }
 });
 
-        const Bloodrequest=await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/request/allrequests`,{
+        const Bloodrequest=await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/getallrequests`,{
           headers:{
             Authorization: `Bearer ${token}`,
             "Content-Type": 'application/json'
