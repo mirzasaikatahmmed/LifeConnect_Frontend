@@ -47,7 +47,21 @@ const DonorDashboard = () => {
         const fetchDashboardData = async () => {
             try {
                 setIsLoading(true);
-                const token = localStorage.getItem('lifeconnect-secret-key');
+
+                // Only run on client side to avoid hydration mismatch
+                if (typeof window === 'undefined') return;
+
+                const storedToken = localStorage.getItem('lifeconnect-secret-key');
+                let token: string | null = null;
+
+                if (storedToken) {
+                    try {
+                        const parsed = JSON.parse(storedToken);
+                        token = parsed.token;
+                    } catch (error) {
+                        console.log("Token cannot be parsed from string");
+                    }
+                }
 
                 if (!token) {
                     setError("Authentication token not found. Please log in.");

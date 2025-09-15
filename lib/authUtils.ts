@@ -5,6 +5,7 @@ export const getDefaultDashboardPath = (role: string | undefined): string => {
     case 'manager':
       return '/manager/Dashboard';
     case 'donor':
+      return '/donor/dashboard';
     case 'user':
       return '/user';
     default:
@@ -25,9 +26,14 @@ export const isAuthorizedForRoute = (userRole: string | undefined, route: string
     return userRole.toLowerCase() === 'manager';
   }
   
+  // Donor routes
+  if (route.startsWith('/donor')) {
+    return userRole.toLowerCase() === 'donor';
+  }
+
   // User routes
   if (route.startsWith('/user')) {
-    return ['user', 'donor'].includes(userRole.toLowerCase());
+    return ['user'].includes(userRole.toLowerCase());
   }
   
   // Public routes
