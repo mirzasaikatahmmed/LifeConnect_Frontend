@@ -76,7 +76,7 @@ const LoginPage: React.FC = () => {
         } else {
           // Default redirect for other roles or if role is not specified
           console.log('Unknown role, redirecting to default dashboard');
-          router.replace('/dashboard');
+          router.replace('/donor/dashboard');
         }
         
         reset();
