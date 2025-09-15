@@ -1,185 +1,167 @@
 'use client';
 
-import { Typography, IconButton, Divider } from '@mui/material';
-import { Facebook, Twitter, Instagram, LinkedIn, Email, Phone, LocationOn } from '@mui/icons-material';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import React from "react";
+import Link from "next/link";
+import { Heart, Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className={cn(
-      'bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900',
-      'text-white mt-auto relative overflow-hidden'
-    )}>
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary-600/10 to-secondary-600/10"></div>
-      </div>
-
-      {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-12 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <Typography variant="h6" className="text-white font-bold text-sm">
-                  LC
-                </Typography>
+    <footer className="bg-gray-900 text-white py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Logo + About */}
+          <div>
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="bg-red-600 p-2 rounded-full">
+                <Heart className="h-6 w-6 text-white" />
               </div>
-              <Typography variant="h6" className="font-bold text-xl">
-                LifeConnect
-              </Typography>
+              <span className="text-xl font-bold">LifeConnect</span>
             </div>
-            <Typography variant="body2" className="text-gray-300 leading-relaxed">
-              Connecting lives, building communities. We bring people together through innovative technology and meaningful experiences.
-            </Typography>
-            
+            <p className="text-gray-400 mb-6">
+              Connecting donors with those in need, saving lives one donation at
+              a time. Building communities through blood donation and emergency support.
+            </p>
+
             {/* Social Media */}
-            <div className="flex space-x-2 pt-4">
+            <div className="flex space-x-3">
               {[
                 { icon: Facebook, href: '#', label: 'Facebook' },
                 { icon: Twitter, href: '#', label: 'Twitter' },
                 { icon: Instagram, href: '#', label: 'Instagram' },
-                { icon: LinkedIn, href: '#', label: 'LinkedIn' }
+                { icon: Linkedin, href: '#', label: 'LinkedIn' }
               ].map(({ icon: Icon, href, label }) => (
-                <IconButton
+                <a
                   key={label}
                   href={href}
-                  className={cn(
-                    'text-gray-300 hover:text-white hover:bg-primary-600',
-                    'transition-all duration-200 hover:scale-110'
-                  )}
-                  size="small"
+                  className="text-gray-400 hover:text-white hover:bg-red-600 p-2 rounded-full transition-all duration-200"
+                  aria-label={label}
                 >
-                  <Icon fontSize="small" />
-                </IconButton>
+                  <Icon className="h-4 w-4" />
+                </a>
               ))}
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <Typography variant="h6" className="font-semibold mb-4 text-primary-300">
-              Quick Links
-            </Typography>
-            <ul className="space-y-3">
-              {[
-                { label: 'About Us', href: '/about' },
-                { label: 'Services', href: '/services' },
-                { label: 'Features', href: '/features' },
-                { label: 'Pricing', href: '/pricing' },
-                { label: 'Blog', href: '/blog' },
-              ].map(({ label, href }) => (
-                <li key={label}>
-                  <Link 
-                    href={href} 
-                    className="text-gray-300 hover:text-primary-300 transition-colors duration-200 text-sm flex items-center group"
-                  >
-                    <span className="group-hover:translate-x-1 transition-transform duration-200">
-                      {label}
-                    </span>
-                  </Link>
-                </li>
-              ))}
+            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2 text-gray-400">
+              <li>
+                <Link href="/about" className="hover:text-white transition-colors">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/services" className="hover:text-white transition-colors">
+                  Our Services
+                </Link>
+              </li>
+              <li>
+                <Link href="/donate" className="hover:text-white transition-colors">
+                  How to Donate
+                </Link>
+              </li>
+              <li>
+                <Link href="/eligibility" className="hover:text-white transition-colors">
+                  Eligibility
+                </Link>
+              </li>
+              <li>
+                <Link href="/faq" className="hover:text-white transition-colors">
+                  FAQ
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Services */}
           <div>
-            <Typography variant="h6" className="font-semibold mb-4 text-primary-300">
-              Support
-            </Typography>
-            <ul className="space-y-3">
-              {[
-                { label: 'Help Center', href: '/help' },
-                { label: 'Contact Us', href: '/contact' },
-                { label: 'Privacy Policy', href: '/privacy' },
-                { label: 'Terms of Service', href: '/terms' },
-                { label: 'FAQ', href: '/faq' },
-              ].map(({ label, href }) => (
-                <li key={label}>
-                  <Link 
-                    href={href} 
-                    className="text-gray-300 hover:text-primary-300 transition-colors duration-200 text-sm flex items-center group"
-                  >
-                    <span className="group-hover:translate-x-1 transition-transform duration-200">
-                      {label}
-                    </span>
-                  </Link>
-                </li>
-              ))}
+            <h3 className="text-lg font-semibold mb-4">Services</h3>
+            <ul className="space-y-2 text-gray-400">
+              <li>
+                <Link href="/blood-drives" className="hover:text-white transition-colors">
+                  Blood Drives
+                </Link>
+              </li>
+              <li>
+                <Link href="/emergency-requests" className="hover:text-white transition-colors">
+                  Emergency Requests
+                </Link>
+              </li>
+              <li>
+                <Link href="/health-screening" className="hover:text-white transition-colors">
+                  Health Screening
+                </Link>
+              </li>
+              <li>
+                <Link href="/donor-rewards" className="hover:text-white transition-colors">
+                  Donor Rewards
+                </Link>
+              </li>
+              <li>
+                <Link href="/community" className="hover:text-white transition-colors">
+                  Community
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact */}
           <div>
-            <Typography variant="h6" className="font-semibold mb-4 text-primary-300">
-              Get in Touch
-            </Typography>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3 text-gray-300">
-                <Email fontSize="small" className="text-primary-400" />
-                <Typography variant="body2">support@lifeconnect.com</Typography>
+            <h3 className="text-lg font-semibold mb-4">Contact</h3>
+            <div className="space-y-3 text-gray-400">
+              <div className="flex items-center">
+                <Phone className="w-4 h-4 mr-3 text-red-400" />
+                <span>+1 (555) 123-4567</span>
               </div>
-              <div className="flex items-center space-x-3 text-gray-300">
-                <Phone fontSize="small" className="text-primary-400" />
-                <Typography variant="body2">+1 (555) 123-4567</Typography>
+              <div className="flex items-center">
+                <Mail className="w-4 h-4 mr-3 text-red-400" />
+                <span>help@lifeconnect.org</span>
               </div>
-              <div className="flex items-center space-x-3 text-gray-300">
-                <LocationOn fontSize="small" className="text-primary-400" />
-                <Typography variant="body2">123 Business Ave, Suite 100</Typography>
+              <div className="flex items-center">
+                <MapPin className="w-4 h-4 mr-3 text-red-400" />
+                <span>123 Health St, Medical City</span>
               </div>
             </div>
 
             {/* Newsletter Signup */}
             <div className="mt-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-              <Typography variant="body2" className="text-gray-300 mb-3">
+              <p className="text-gray-300 mb-3 text-sm">
                 Subscribe to our newsletter
-              </Typography>
+              </p>
               <div className="flex space-x-2">
                 <input
                   type="email"
                   placeholder="Your email"
-                  className={cn(
-                    'flex-1 px-3 py-2 bg-gray-700 border border-gray-600',
-                    'rounded-md text-white placeholder-gray-400 text-sm',
-                    'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500'
-                  )}
+                  className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 />
-                <button className={cn(
-                  'px-4 py-2 bg-gradient-primary text-white text-sm font-medium',
-                  'rounded-md hover:shadow-lg transition-all duration-200',
-                  'hover:-translate-y-0.5'
-                )}>
+                <button className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 hover:shadow-lg transition-all duration-200">
                   Subscribe
                 </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <Divider className="border-gray-700" />
-
-      {/* Bottom Bar */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <Typography variant="body2" className="text-gray-400 text-center md:text-left">
-            © {currentYear} LifeConnect. All rights reserved.
-          </Typography>
-          <div className="flex space-x-6">
-            <Link href="/privacy" className="text-gray-400 hover:text-primary-300 text-sm transition-colors">
-              Privacy
-            </Link>
-            <Link href="/terms" className="text-gray-400 hover:text-primary-300 text-sm transition-colors">
-              Terms
-            </Link>
-            <Link href="/cookies" className="text-gray-400 hover:text-primary-300 text-sm transition-colors">
-              Cookies
-            </Link>
+        {/* Bottom bar */}
+        <div className="border-t border-gray-800 mt-12 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <p className="text-gray-400 text-center md:text-left">
+              &copy; {currentYear} LifeConnect. All rights reserved. Saving lives together.
+            </p>
+            <div className="flex space-x-6">
+              <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
+                Terms of Service
+              </Link>
+              <Link href="/cookies" className="text-gray-400 hover:text-white text-sm transition-colors">
+                Cookie Policy
+              </Link>
+            </div>
           </div>
         </div>
       </div>
