@@ -129,7 +129,7 @@ const getAuthToken = () => {
       
       // First, get all requests and find the specific one
       // If you have a dedicated endpoint for single request, use that instead
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/getallrequests`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/request/allrequests`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

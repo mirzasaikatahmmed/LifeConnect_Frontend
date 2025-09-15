@@ -14,6 +14,7 @@ import {
     Chip,
     Button
 } from '@mui/material';
+
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { Hospital, Syringe, Clock, Calendar, Droplets } from 'lucide-react';
@@ -86,7 +87,7 @@ const BloodRequestsPage = () => {
             <Grid container spacing={4} className="justify-center">
                 {bloodRequests.length > 0 ? (
                     bloodRequests.map((request) => (
-                        <Grid item xs={12} sm={6} md={4} key={request.id}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={request.id}>
                             <Card className="shadow-lg rounded-xl transition-all duration-300 hover:shadow-2xl">
                                 <CardContent>
                                     <Box className="flex items-center space-x-4 mb-4">

@@ -90,7 +90,7 @@ const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/req
   }
 });
 
-        const Bloodrequest=await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/getallrequests`,{
+        const Bloodrequest=await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/manager/request/allrequests`,{
           headers:{
             Authorization: `Bearer ${token}`,
             "Content-Type": 'application/json'
