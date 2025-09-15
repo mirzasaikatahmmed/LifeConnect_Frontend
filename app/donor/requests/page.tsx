@@ -1,20 +1,23 @@
-import React from 'react';
+
+"use client";
+
+import React, { useEffect, useState } from 'react';
 import {
     Container,
     Typography,
     Card,
     CardContent,
     Box,
+    CircularProgress,
     Alert,
     Grid,
     Chip,
     Button
 } from '@mui/material';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import { Hospital, Syringe, Clock, Calendar, Droplets } from 'lucide-react';
 import Link from 'next/link';
-import { GetServerSideProps } from 'next';
-import { parseCookies } from 'nookies';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -26,12 +29,45 @@ interface BloodRequest {
     neededBy: string;
 }
 
-interface BloodRequestsPageProps {
-    bloodRequests: BloodRequest[];
-    error?: string;
-}
+const BloodRequestsPage = () => {
+    const router = useRouter();
+    const [bloodRequests, setBloodRequests] = useState<BloodRequest[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-const BloodRequestsPage: React.FC<BloodRequestsPageProps> = ({ bloodRequests, error }) => {
+    useEffect(() => {
+        const fetchRequests = async () => {
+            try {
+                setIsLoading(true);
+                const token = localStorage.getItem('lifeconnect-secret-key');
+                if (!token) {
+                    router.push('/login');
+                    return;
+                }
+                const headers = { Authorization: `Bearer ${token}` };
+
+                //Fetch blood requests
+                const response = await axios.get<BloodRequest[]>(`${API_BASE_URL}/donors/requests`, { headers });
+                setBloodRequests(response.data);
+                setIsLoading(false);
+            } catch (err: any) {
+                console.error("Failed to fetch blood requests:", err);
+                setError("Failed to load blood requests. Please try again.");
+                setIsLoading(false);
+            }
+        };
+
+        fetchRequests();
+    }, [router]);
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-white">
+                <CircularProgress color="primary" />
+            </div>
+        );
+    }
+
     if (error) {
         return (
             <Container className="p-4 bg-white flex flex-col items-center justify-center min-h-screen">
@@ -50,7 +86,7 @@ const BloodRequestsPage: React.FC<BloodRequestsPageProps> = ({ bloodRequests, er
             <Grid container spacing={4} className="justify-center">
                 {bloodRequests.length > 0 ? (
                     bloodRequests.map((request) => (
-                        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={request.id}>
+                        <Grid item xs={12} sm={6} md={4} key={request.id}>
                             <Card className="shadow-lg rounded-xl transition-all duration-300 hover:shadow-2xl">
                                 <CardContent>
                                     <Box className="flex items-center space-x-4 mb-4">
@@ -108,39 +144,6 @@ const BloodRequestsPage: React.FC<BloodRequestsPageProps> = ({ bloodRequests, er
             </Grid>
         </Container>
     );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    try {
-        const cookies = parseCookies(context);
-        const token = cookies['lifeconnect-secret-key'];
-
-        if (!token) {
-            return {
-                redirect: {
-                    destination: '/login',
-                    permanent: false,
-                },
-            };
-        }
-
-        const headers = { Authorization: `Bearer ${token}` };
-        const response = await axios.get<BloodRequest[]>(`${API_BASE_URL}/donors/requests`, { headers });
-
-        return {
-            props: {
-                bloodRequests: response.data,
-            },
-        };
-    } catch (err: any) {
-        console.error("Failed to fetch blood requests:", err);
-        return {
-            props: {
-                bloodRequests: [],
-                error: "Failed to load blood requests. Please try again.",
-            },
-        };
-    }
 };
 
 export default BloodRequestsPage;
