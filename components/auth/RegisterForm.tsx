@@ -3,10 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
-import { Typography, IconButton, Alert, LinearProgress, MenuItem, Chip } from '@mui/material';
-import { Person, Email, Lock, Visibility, VisibilityOff, Phone, Bloodtype } from '@mui/icons-material';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
+import { User, Mail, Lock, Eye, EyeOff, Phone, Heart, AlertCircle, Check } from 'lucide-react';
+import Button from '@/components/Home/Button';
 import { cn } from '@/lib/utils';
 
 interface RegisterFormProps {
@@ -67,12 +65,12 @@ export default function RegisterForm({ onSubmit, loading: externalLoading, error
     if (/[^A-Za-z0-9]/.test(password)) score += 1;
 
     const strengths = [
-      { score: 0, label: 'Very Weak', color: 'error' },
-      { score: 1, label: 'Weak', color: 'error' },
-      { score: 2, label: 'Fair', color: 'warning' },
-      { score: 3, label: 'Good', color: 'info' },
-      { score: 4, label: 'Strong', color: 'success' },
-      { score: 5, label: 'Very Strong', color: 'success' },
+      { score: 0, label: 'Very Weak', color: 'red' },
+      { score: 1, label: 'Weak', color: 'red' },
+      { score: 2, label: 'Fair', color: 'yellow' },
+      { score: 3, label: 'Good', color: 'blue' },
+      { score: 4, label: 'Strong', color: 'green' },
+      { score: 5, label: 'Very Strong', color: 'green' },
     ];
 
     return strengths[score];
@@ -180,150 +178,214 @@ export default function RegisterForm({ onSubmit, loading: externalLoading, error
 
   return (
     <div className="space-y-6">
-      {(externalLoading ?? loading) && <LinearProgress className="rounded-full" />}
+      {/* Loading Progress */}
+      {(externalLoading ?? loading) && (
+        <div className="w-full bg-gray-200 rounded-full h-1">
+          <div className="bg-red-600 h-1 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+        </div>
+      )}
 
+      {/* Error Alert */}
       {(externalError || error) && (
-        <Alert severity="error" className="rounded-lg border-l-4 border-red-500 animate-slide-up">
-          {externalError || error}
-        </Alert>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-3">
+          <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+          <p className="text-red-700 text-sm">{externalError || error}</p>
+        </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-1">
-          <Input
-            label="Full Name"
-            required
-            value={formData.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
-            startIcon={<Person />}
-            placeholder="Enter your full name (e.g., John Smith)"
-            error={!!formErrors.name}
-            helperText={formErrors.name || "This will be displayed as your name"}
-            disabled={externalLoading ?? loading}
-            className={cn(
-              'transition-all duration-200',
-              formErrors.name && 'animate-bounce-gentle'
-            )}
-          />
+        {/* Full Name */}
+        <div>
+          <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+            Full Name *
+          </label>
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              id="name"
+              type="text"
+              required
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              className={cn(
+                'w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg',
+                'focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none',
+                'transition-all duration-200',
+                formErrors.name && 'border-red-300 bg-red-50'
+              )}
+              placeholder="Enter your full name"
+              disabled={externalLoading ?? loading}
+            />
+          </div>
+          {formErrors.name && (
+            <p className="text-red-600 text-sm mt-1 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
+              {formErrors.name}
+            </p>
+          )}
+          {!formErrors.name && (
+            <p className="text-gray-500 text-sm mt-1">This will be displayed as your name</p>
+          )}
         </div>
 
-        <div className="space-y-1">
-          <Input
-            label="Blood Type"
-            select
-            required
-            value={formData.bloodType}
-            onChange={(e) => handleInputChange('bloodType', e.target.value)}
-            startIcon={<Bloodtype />}
-            error={!!formErrors.bloodType}
-            helperText={formErrors.bloodType || "Required for medical emergency protocols"}
-            disabled={externalLoading ?? loading}
-            className={cn(
-              'transition-all duration-200',
-              formErrors.bloodType && 'animate-bounce-gentle'
-            )}
-          >
-            <MenuItem value="">
-              <em className="text-gray-400">Select your blood type</em>
-            </MenuItem>
-            {bloodTypes.map((type) => (
-              <MenuItem key={type} value={type} className="hover:bg-primary-50 py-3">
-                <div className="flex items-center space-x-3">
-                  <div className={cn(
-                    'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold',
-                    'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-sm'
-                  )}>
-                    {type}
-                  </div>
-                  <span className="font-medium">{type}</span>
-                  <span className="text-gray-500 text-sm">
-                    ({type.includes('+') ? 'Positive' : 'Negative'})
-                  </span>
-                </div>
-              </MenuItem>
-            ))}
-          </Input>
+        {/* Blood Type */}
+        <div>
+          <label htmlFor="bloodType" className="block text-sm font-semibold text-gray-700 mb-2">
+            Blood Type *
+          </label>
+          <div className="relative">
+            <Heart className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <select
+              id="bloodType"
+              required
+              value={formData.bloodType}
+              onChange={(e) => handleInputChange('bloodType', e.target.value)}
+              className={cn(
+                'w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg',
+                'focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none',
+                'transition-all duration-200 bg-white',
+                formErrors.bloodType && 'border-red-300 bg-red-50'
+              )}
+              disabled={externalLoading ?? loading}
+            >
+              <option value="">Select your blood type</option>
+              {bloodTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type} ({type.includes('+') ? 'Positive' : 'Negative'})
+                </option>
+              ))}
+            </select>
+          </div>
+          {formErrors.bloodType && (
+            <p className="text-red-600 text-sm mt-1 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
+              {formErrors.bloodType}
+            </p>
+          )}
+          {!formErrors.bloodType && (
+            <p className="text-gray-500 text-sm mt-1">Required for medical emergency protocols</p>
+          )}
         </div>
 
-        <div className="space-y-1">
-          <Input
-            label="Phone Number"
-            type="tel"
-            required
-            value={formData.phoneNumber}
-            onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-            startIcon={<Phone />}
-            placeholder="+8801700000000"
-            error={!!formErrors.phoneNumber}
-            helperText={formErrors.phoneNumber || "Include country code for international numbers"}
-            disabled={externalLoading ?? loading}
-            className={cn(
-              'transition-all duration-200',
-              formErrors.phoneNumber && 'animate-bounce-gentle'
-            )}
-          />
+        {/* Phone Number */}
+        <div>
+          <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
+            Phone Number *
+          </label>
+          <div className="relative">
+            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              id="phone"
+              type="tel"
+              required
+              value={formData.phoneNumber}
+              onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+              className={cn(
+                'w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg',
+                'focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none',
+                'transition-all duration-200',
+                formErrors.phoneNumber && 'border-red-300 bg-red-50'
+              )}
+              placeholder="+8801700000000"
+              disabled={externalLoading ?? loading}
+            />
+          </div>
+          {formErrors.phoneNumber && (
+            <p className="text-red-600 text-sm mt-1 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
+              {formErrors.phoneNumber}
+            </p>
+          )}
+          {!formErrors.phoneNumber && (
+            <p className="text-gray-500 text-sm mt-1">Include country code for international numbers</p>
+          )}
         </div>
 
-        <div className="space-y-1">
-          <Input
-            label="Email Address"
-            type="email"
-            required
-            value={formData.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
-            startIcon={<Email />}
-            placeholder="example@domain.com"
-            error={!!formErrors.email}
-            helperText={formErrors.email || "This will be your login email address"}
-            disabled={externalLoading ?? loading}
-            className={cn(
-              'transition-all duration-200',
-              formErrors.email && 'animate-bounce-gentle'
-            )}
-          />
+        {/* Email */}
+        <div>
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+            Email Address *
+          </label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              id="email"
+              type="email"
+              required
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              className={cn(
+                'w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg',
+                'focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none',
+                'transition-all duration-200',
+                formErrors.email && 'border-red-300 bg-red-50'
+              )}
+              placeholder="example@domain.com"
+              disabled={externalLoading ?? loading}
+            />
+          </div>
+          {formErrors.email && (
+            <p className="text-red-600 text-sm mt-1 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
+              {formErrors.email}
+            </p>
+          )}
+          {!formErrors.email && (
+            <p className="text-gray-500 text-sm mt-1">This will be your login email address</p>
+          )}
         </div>
 
-        <div className="space-y-3">
-          <Input
-            label="Password"
-            type={showPassword ? 'text' : 'password'}
-            required
-            value={formData.password}
-            onChange={(e) => handleInputChange('password', e.target.value)}
-            startIcon={<Lock />}
-            endIcon={
-              <IconButton
-                onClick={() => setShowPassword(!showPassword)}
-                edge="end"
-                size="small"
-                className="hover:bg-gray-100 transition-colors"
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            }
-            placeholder="Create a strong password (min. 8 characters)"
-            error={!!formErrors.password}
-            helperText={formErrors.password || "Must contain uppercase, lowercase, number, and special character"}
-            disabled={externalLoading ?? loading}
-            className={cn(
-              'transition-all duration-200',
-              formErrors.password && 'animate-bounce-gentle'
-            )}
-          />
+        {/* Password */}
+        <div>
+          <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+            Password *
+          </label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              required
+              value={formData.password}
+              onChange={(e) => handleInputChange('password', e.target.value)}
+              className={cn(
+                'w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg',
+                'focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none',
+                'transition-all duration-200',
+                formErrors.password && 'border-red-300 bg-red-50'
+              )}
+              placeholder="Create a strong password (min. 8 characters)"
+              disabled={externalLoading ?? loading}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
+          {formErrors.password && (
+            <p className="text-red-600 text-sm mt-1 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
+              {formErrors.password}
+            </p>
+          )}
 
+          {/* Password Strength */}
           {formData.password && (
-            <div className="bg-gray-50 p-3 rounded-lg space-y-2">
-              <div className="flex items-center justify-between">
-                <Typography variant="body2" className="text-gray-600 font-medium">
-                  Password Strength
-                </Typography>
-                <Chip
-                  label={passwordStrength.label}
-                  size="small"
-                  color={passwordStrength.color as any}
-                  variant="outlined"
-                  className="text-xs font-medium"
-                />
+            <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">Password Strength</span>
+                <span className={cn(
+                  'text-xs font-semibold px-2 py-1 rounded',
+                  passwordStrength.color === 'red' && 'bg-red-100 text-red-800',
+                  passwordStrength.color === 'yellow' && 'bg-yellow-100 text-yellow-800',
+                  passwordStrength.color === 'blue' && 'bg-blue-100 text-blue-800',
+                  passwordStrength.color === 'green' && 'bg-green-100 text-green-800'
+                )}>
+                  {passwordStrength.label}
+                </span>
               </div>
               <div className="flex space-x-1">
                 {[...Array(5)].map((_, i) => (
@@ -332,9 +394,9 @@ export default function RegisterForm({ onSubmit, loading: externalLoading, error
                     className={cn(
                       'h-2 flex-1 rounded-full transition-all duration-300',
                       i < passwordStrength.score
-                        ? passwordStrength.color === 'error' ? 'bg-red-400'
-                        : passwordStrength.color === 'warning' ? 'bg-yellow-400'
-                        : passwordStrength.color === 'info' ? 'bg-blue-400'
+                        ? passwordStrength.color === 'red' ? 'bg-red-400'
+                        : passwordStrength.color === 'yellow' ? 'bg-yellow-400'
+                        : passwordStrength.color === 'blue' ? 'bg-blue-400'
                         : 'bg-green-400'
                         : 'bg-gray-200'
                     )}
@@ -345,7 +407,8 @@ export default function RegisterForm({ onSubmit, loading: externalLoading, error
           )}
         </div>
 
-        <div className="space-y-3">
+        {/* Terms and Conditions */}
+        <div>
           <div className="flex items-start space-x-3">
             <input
               id="terms"
@@ -353,103 +416,81 @@ export default function RegisterForm({ onSubmit, loading: externalLoading, error
               checked={acceptedTerms}
               onChange={(e) => setAcceptedTerms(e.target.checked)}
               className={cn(
-                'w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded mt-0.5',
-                'focus:ring-primary-500 focus:ring-2',
+                'w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded mt-1',
+                'focus:ring-red-500 focus:ring-2',
                 formErrors.terms && 'border-red-500'
               )}
             />
             <label htmlFor="terms" className="text-sm text-gray-700 cursor-pointer leading-relaxed">
               I agree to the{' '}
-              <Link href="/terms" className="text-primary-600 hover:text-primary-500 font-medium hover:underline">
+              <Link href="/terms" className="text-red-600 hover:text-red-500 font-medium hover:underline">
                 Terms of Service
               </Link>{' '}
               and{' '}
-              <Link href="/privacy" className="text-primary-600 hover:text-primary-500 font-medium hover:underline">
+              <Link href="/privacy" className="text-red-600 hover:text-red-500 font-medium hover:underline">
                 Privacy Policy
               </Link>
             </label>
           </div>
           {formErrors.terms && (
-            <Typography variant="body2" className="text-red-600 text-sm ml-7">
+            <p className="text-red-600 text-sm mt-1 flex items-center ml-7">
+              <AlertCircle className="h-4 w-4 mr-1" />
               {formErrors.terms}
-            </Typography>
+            </p>
           )}
         </div>
 
-        <div className="pt-6">
+        {/* Submit Button */}
+        <div className="pt-4">
           <Button
             type="submit"
             variant="primary"
             size="lg"
+            className="w-full"
             disabled={(externalLoading ?? loading) || !acceptedTerms}
-            className={cn(
-              "w-full h-14 text-lg font-bold tracking-wide text-white",
-              "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600",
-              "hover:from-blue-700 hover:via-purple-700 hover:to-pink-700",
-              "border-2 border-blue-500 hover:border-purple-600",
-              "rounded-xl transition-all duration-300 ease-in-out",
-              "transform hover:-translate-y-1 hover:scale-105",
-              "relative overflow-hidden group",
-              "focus:ring-4 focus:ring-blue-300 focus:outline-none"
-            )}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-
             {(externalLoading ?? loading) ? (
-              <div className="flex items-center space-x-3 relative z-10">
-                <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span className="animate-pulse">Creating User Account...</span>
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Creating Account...</span>
               </div>
             ) : (
-              <div className="flex items-center justify-center space-x-2 relative z-10">
-                <span className="flex items-center space-x-2">
-                  <span>Create Account</span>
-                </span>
-                <div className="flex items-center space-x-1 group-hover:translate-x-1 transition-transform duration-200">
-                  <span className="text-xl">→</span>
-                  <div className="w-2 h-2 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
+              <div className="flex items-center justify-center space-x-2">
+                <Heart className="h-5 w-5" />
+                <span>Join LifeConnect</span>
               </div>
             )}
           </Button>
         </div>
       </form>
 
-      <div className={cn(
-        'bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500',
-        'p-5 rounded-xl shadow-soft'
-      )}>
+      {/* Info Box */}
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <div className="flex items-start space-x-3">
-          <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-            <Typography variant="body2" className="text-white font-bold text-sm">
-              👤
-            </Typography>
+          <div className="bg-green-500 rounded-full p-1 flex-shrink-0">
+            <Check className="h-4 w-4 text-white" />
           </div>
-          <div className="flex-1">
-            <Typography variant="body1" className="text-green-800 font-semibold mb-1">
-              User Account Registration
-            </Typography>
-            <Typography variant="body2" className="text-green-700 leading-relaxed">
-              This registration creates a user account with standard access privileges.
-              All information must be accurate for your safety and security.
-            </Typography>
+          <div>
+            <h4 className="font-semibold text-green-800 mb-1">Donor Registration</h4>
+            <p className="text-green-700 text-sm leading-relaxed">
+              This registration creates a donor account with access to blood donation services.
+              All information must be accurate for safety and verification purposes.
+            </p>
           </div>
         </div>
       </div>
 
+      {/* Sign In Link */}
       <div className="text-center">
-        <Typography variant="body2" className="text-gray-600">
+        <p className="text-gray-600">
           Already have an account?{' '}
           <Link
             href="/login"
-            className={cn(
-              'text-primary-600 hover:text-primary-500 font-medium',
-              'transition-colors duration-200 hover:underline'
-            )}
+            className="text-red-600 hover:text-red-500 font-medium transition-colors duration-200 hover:underline"
           >
             Sign in here
           </Link>
-        </Typography>
+        </p>
       </div>
     </div>
   );

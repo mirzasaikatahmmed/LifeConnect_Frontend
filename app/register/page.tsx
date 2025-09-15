@@ -62,7 +62,7 @@ export default function RegisterPage() {
   // Show loading spinner while checking authentication or redirecting
   if (authLoading || (isAuthenticated && user?.role)) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-pink-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">
@@ -75,8 +75,8 @@ export default function RegisterPage() {
 
   return (
     <AuthContainer
-      title="Create Your Account"
-      subtitle="Join LifeConnect and start building meaningful connections"
+      title="Join LifeConnect"
+      subtitle="Register as a blood donor and help save lives in your community"
     >
       <RegisterForm 
         onSubmit={handleRegister}

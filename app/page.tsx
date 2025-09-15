@@ -47,7 +47,7 @@ export default function Home() {
                 </Button>
                 <Button variant="outline" size="lg">
                   <MapPin className="w-5 h-5 mr-2" />
-                  Find Drive
+                  Find Donor
                 </Button>
               </div>
               <div className="mt-8 text-center sm:text-left">

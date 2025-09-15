@@ -16,8 +16,6 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
 
   // Define routes where header and footer should be hidden
   const hideHeaderFooterRoutes = [
-    '/login',
-    '/register', 
     '/forgot-password'
   ];
 
