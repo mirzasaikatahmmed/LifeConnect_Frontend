@@ -28,6 +28,7 @@ interface CreateAlertData {
   isSystemWide: boolean;
   targetAudience: 'all' | 'donors' | 'managers' | 'admins';
   priority: number;
+  sendEmail: boolean;
 }
 
 const alertTypes = [
@@ -72,7 +73,8 @@ export default function CreateAlertPage() {
     expiresAt: '',
     isSystemWide: true,
     targetAudience: 'all',
-    priority: 0
+    priority: 0,
+    sendEmail: true
   });
 
   const handleInputChange = (field: keyof CreateAlertData, value: string | number | boolean) => {
@@ -106,20 +108,39 @@ export default function CreateAlertPage() {
         throw new Error('Authentication required');
       }
 
-      // Prepare the data for the API - exclude status completely to match working Postman example
-      const alertData = {
-        title: formData.title,
-        message: formData.message,
-        type: formData.type,
-        targetAudience: formData.targetAudience,
-        priority: formData.priority,
-        isSystemWide: formData.isSystemWide,
-        ...(formData.expiresAt && { expiresAt: new Date(formData.expiresAt).toISOString() })
-      };
+      // Prepare the data for the API based on endpoint type
+      let alertData;
+
+      if (formData.sendEmail) {
+        // For send-email endpoint, use SendAlertEmailDto format
+        alertData = {
+          title: formData.title,
+          message: formData.message,
+          type: formData.type,
+          targetAudience: formData.targetAudience,
+          priority: formData.priority,
+          sendEmail: formData.sendEmail,
+          ...(formData.expiresAt && { expiresAt: new Date(formData.expiresAt).toISOString() })
+        };
+      } else {
+        // For regular alerts endpoint, use CreateAlertDto format
+        alertData = {
+          title: formData.title,
+          message: formData.message,
+          type: formData.type,
+          targetAudience: formData.targetAudience,
+          priority: formData.priority,
+          isSystemWide: formData.isSystemWide,
+          ...(formData.expiresAt && { expiresAt: new Date(formData.expiresAt).toISOString() })
+        };
+      }
 
       // Use XMLHttpRequest instead of fetch
       const xhr = new XMLHttpRequest();
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/alerts`;
+      // Choose the endpoint based on whether to send email or not
+      const url = formData.sendEmail
+        ? `${process.env.NEXT_PUBLIC_API_URL}/api/alerts/send-email`
+        : `${process.env.NEXT_PUBLIC_API_URL}/api/alerts`;
 
       xhr.open('POST', url, true);
       xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
@@ -129,8 +150,14 @@ export default function CreateAlertPage() {
         if (xhr.readyState === 4) {
           if (xhr.status === 201 || xhr.status === 200) {
             try {
-              const newAlert = JSON.parse(xhr.responseText);
-              console.log('Alert created successfully:', newAlert);
+              const result = JSON.parse(xhr.responseText);
+              if (formData.sendEmail) {
+                console.log('Alert created and email sent successfully:', result);
+                // Show success message for email alerts
+                alert('Alert created and email notifications sent successfully!');
+              } else {
+                console.log('Alert created successfully:', result);
+              }
               // Redirect to the alerts list
               router.push('/admin/alerts');
             } catch (parseError) {
@@ -374,6 +401,20 @@ export default function CreateAlertPage() {
               </label>
             </div>
 
+            {/* Send Email Toggle */}
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="sendEmail"
+                checked={formData.sendEmail}
+                onChange={(e) => handleInputChange('sendEmail', e.target.checked)}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label htmlFor="sendEmail" className="ml-2 block text-sm text-gray-900">
+                Send email notifications to all users automatically
+              </label>
+            </div>
+
 
             {/* Expiration Date */}
             <div>
@@ -424,6 +465,7 @@ export default function CreateAlertPage() {
                         {priorityLabels[formData.priority as keyof typeof priorityLabels]} priority •
                         {formData.isSystemWide ? ' System-wide' : ` ${formData.targetAudience}`}
                         {formData.expiresAt && ` • Expires ${new Date(formData.expiresAt).toLocaleDateString()}`}
+                        {formData.sendEmail && ' • 📧 Email notifications enabled'}
                       </span>
                     </div>
                   </div>
@@ -470,6 +512,7 @@ export default function CreateAlertPage() {
             <li>• System-wide alerts appear across all platform sections</li>
             <li>• Target specific user groups when needed</li>
             <li>• Set expiration dates for temporary alerts</li>
+            <li>• Enable email notifications to automatically send alerts to all users</li>
             <li>• Use the preview to see how your alert will look</li>
           </ul>
         </div>

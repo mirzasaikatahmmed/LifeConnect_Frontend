@@ -16,7 +16,8 @@ import {
   CheckCircle,
   XCircle,
   Info,
-  AlertCircle
+  AlertCircle,
+  Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import { TokenStorage } from '@/lib/tokenStorage';
@@ -86,6 +87,7 @@ export default function AdminAlertsPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [audienceFilter, setAudienceFilter] = useState('all');
+  const [emailLoadingId, setEmailLoadingId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchAlerts();
@@ -215,6 +217,65 @@ export default function AdminAlertsPage() {
     } catch (err) {
       console.error('Error deleting alert:', err);
       alert(err instanceof Error ? err.message : 'Failed to delete alert');
+    }
+  };
+
+  const sendEmailAlert = async (alertId: number, alertTitle: string) => {
+    const confirmSend = window.confirm(
+      `Send alert "${alertTitle}" via email to all users?\n\nThis will send immediate email notifications to all registered users.`
+    );
+
+    if (!confirmSend) return;
+
+    try {
+      setEmailLoadingId(alertId);
+      const authToken = token || TokenStorage.getToken();
+      if (!authToken) {
+        throw new Error('Authentication required');
+      }
+
+      const xhr = new XMLHttpRequest();
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/alerts/${alertId}/send-email`;
+
+      xhr.open('POST', url, true);
+      xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            try {
+              const result = JSON.parse(xhr.responseText);
+              window.alert(`Email sent successfully!\n\nSent: ${result.data?.sentCount || 'N/A'}\nFailed: ${result.data?.failedCount || 0}`);
+            } catch (parseError) {
+              window.alert('Email sending process completed successfully!');
+            }
+            setEmailLoadingId(null);
+          } else {
+            let errorMessage = `Failed to send email: HTTP ${xhr.status}`;
+            try {
+              const errorData = JSON.parse(xhr.responseText);
+              errorMessage = errorData.message || errorMessage;
+            } catch (e) {
+              // Use default error message
+            }
+            alert(errorMessage);
+            setEmailLoadingId(null);
+          }
+        }
+      };
+
+      xhr.onerror = function() {
+        alert('Network error: Unable to send email');
+        setEmailLoadingId(null);
+      };
+
+      xhr.send();
+
+    } catch (err) {
+      console.error('Error sending email:', err);
+      alert(err instanceof Error ? err.message : 'Failed to send email');
+      setEmailLoadingId(null);
     }
   };
 
@@ -553,18 +614,33 @@ export default function AdminAlertsPage() {
                           <Link
                             href={`/admin/alerts/${alert.id}`}
                             className="inline-flex items-center p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded"
+                            title="View Details"
                           >
                             <Eye className="h-4 w-4" />
                           </Link>
+                          <button
+                            onClick={() => sendEmailAlert(alert.id, alert.title)}
+                            disabled={emailLoadingId === alert.id}
+                            className="inline-flex items-center p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Send Email"
+                          >
+                            {emailLoadingId === alert.id ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
+                            ) : (
+                              <Mail className="h-4 w-4" />
+                            )}
+                          </button>
                           <Link
                             href={`/admin/alerts/${alert.id}/edit`}
-                            className="inline-flex items-center p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded"
+                            className="inline-flex items-center p-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded"
+                            title="Edit Alert"
                           >
                             <Edit className="h-4 w-4" />
                           </Link>
                           <button
                             onClick={() => deleteAlert(alert.id)}
                             className="inline-flex items-center p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded"
+                            title="Delete Alert"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>

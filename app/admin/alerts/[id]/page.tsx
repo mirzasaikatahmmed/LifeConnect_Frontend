@@ -17,7 +17,8 @@ import {
   CheckCircle,
   Clock,
   User,
-  Eye
+  Eye,
+  Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import { TokenStorage } from '@/lib/tokenStorage';
@@ -86,6 +87,7 @@ export default function AlertDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
 
   const alertId = params?.id as string;
 
@@ -216,6 +218,68 @@ export default function AlertDetailsPage() {
     }
   };
 
+  const handleSendEmail = async () => {
+    if (!alert) return;
+
+    const confirmSend = window.confirm(
+      `Send this alert "${alert.title}" via email to all users?\n\nThis will send immediate email notifications to all registered users.`
+    );
+
+    if (!confirmSend) return;
+
+    try {
+      setEmailLoading(true);
+      const authToken = token || TokenStorage.getToken();
+
+      if (!authToken) {
+        throw new Error('Authentication required');
+      }
+
+      const xhr = new XMLHttpRequest();
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/alerts/${alertId}/send-email`;
+
+      xhr.open('POST', url, true);
+      xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            try {
+              const result = JSON.parse(xhr.responseText);
+              window.alert(`Email sent successfully!\n\nSent: ${result.data?.sentCount || 'N/A'}\nFailed: ${result.data?.failedCount || 0}`);
+            } catch (parseError) {
+              window.alert('Email sending process completed successfully!');
+            }
+            setEmailLoading(false);
+          } else {
+            let errorMessage = `Failed to send email: HTTP ${xhr.status}`;
+            try {
+              const errorData = JSON.parse(xhr.responseText);
+              errorMessage = errorData.message || errorMessage;
+            } catch (e) {
+              // Use default error message
+            }
+            window.alert(errorMessage);
+            setEmailLoading(false);
+          }
+        }
+      };
+
+      xhr.onerror = function() {
+        window.alert('Network error: Unable to send email');
+        setEmailLoading(false);
+      };
+
+      xhr.send();
+
+    } catch (err) {
+      console.error('Error sending email:', err);
+      window.alert(err instanceof Error ? err.message : 'Failed to send email');
+      setEmailLoading(false);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -327,6 +391,15 @@ export default function AlertDetailsPage() {
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
+              </button>
+
+              <button
+                onClick={handleSendEmail}
+                disabled={emailLoading}
+                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Mail className="h-4 w-4 mr-2" />
+                {emailLoading ? 'Sending...' : 'Send Email'}
               </button>
 
               <Link
@@ -581,6 +654,15 @@ export default function AlertDetailsPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
 
               <div className="space-y-3">
+                <button
+                  onClick={handleSendEmail}
+                  disabled={emailLoading}
+                  className="w-full flex items-center justify-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Mail className="h-4 w-4 mr-2" />
+                  {emailLoading ? 'Sending...' : 'Send Email'}
+                </button>
+
                 <Link
                   href={`/admin/alerts/${alert.id}/edit`}
                   className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
