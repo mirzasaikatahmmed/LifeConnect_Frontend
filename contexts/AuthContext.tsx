@@ -84,13 +84,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Backend returns { access_token, admin } structure
       if (response.data && response.data.access_token) {
-        console.log('Full response from backend:', JSON.stringify(response.data, null, 2)); // Debug log
+        console.log('Full response from backend:', JSON.stringify(response.data, null, 2));
         
         const { access_token, admin } = response.data;
         
         // Store user data first
         if (admin) {
-          console.log('Admin object from backend:', JSON.stringify(admin, null, 2)); // Debug log
+          console.log('Admin object from backend:', JSON.stringify(admin, null, 2));
           
           // Handle different role formats from backend - try all possible ways
           let userRole = null;
@@ -117,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log('Mapped roleId to role name:', admin.roleId, '->', userRole);
           }
           
-          console.log('Final extracted role:', userRole); // Debug log
+          console.log('Final extracted role:', userRole);
           
           const userData = {
             id: Number(admin.id),
