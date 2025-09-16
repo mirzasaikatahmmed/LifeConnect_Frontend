@@ -28,15 +28,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      setLoading(false);
+      return;
+    }
+
     // Check for existing token on mount
     const savedToken = TokenStorage.getToken();
     const savedUser = TokenStorage.getUser();
-    
+
     if (savedToken) {
       setToken(savedToken);
       // Set up axios default header
       axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
-      
+
       // Restore user data if available
       if (savedUser) {
         setUser(savedUser);
