@@ -60,8 +60,8 @@ const LoginPage: React.FC = () => {
         }
 
         console.log('Saved userRole:', localStorage.getItem('userRole'));
-        console.log('User role:', userRole); // Debug log
-        console.log('Full result:', result); // Debug log
+        console.log('User role:', userRole);
+        console.log('Full result:', result);
 
         // Use the dashboard utility for consistent routing
         const dashboardPath = getDefaultDashboardPath(userRole);
@@ -195,12 +195,6 @@ const LoginPage: React.FC = () => {
                     Remember me
                   </label>
                 </div>
-                <a
-                  href="/login/forgot-password"
-                  className="text-sm text-red-600 hover:text-red-700 font-medium hover:underline transition-colors"
-                >
-                  Forgot password?
-                </a>
               </div>
 
               {/* Login Error */}
