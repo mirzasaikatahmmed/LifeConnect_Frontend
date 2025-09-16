@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { Heart, Users, Shield, Award, Clock, MapPin, Target, Eye, Handshake } from 'lucide-react';
 import Button from '@/components/Home/Button';
