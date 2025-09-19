@@ -32,8 +32,8 @@ const LoginPage: React.FC = () => {
   } = useForm<LoginFormData>();
 
   // Axios configuration
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
-  
+  const API_BASE_URL = 'https://lifeconnect-backend.saikat.com.bd';
+
   const api = axios.create({
     baseURL: API_BASE_URL,
     headers: {
@@ -54,17 +54,17 @@ const LoginPage: React.FC = () => {
       // Store JWT token and user info in localStorage
       localStorage.setItem('access_token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-      
+
       // Redirect based on user role
       redirectToDashboard(response.data.user.role);
-      
+
       reset();
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const message = error.response?.data?.message || 
-                       error.response?.data?.error || 
-                       error.message || 
-                       'Login failed';
+        const message = error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          'Login failed';
         setLoginError(message);
       } else {
         setLoginError('An unexpected error occurred');
@@ -130,9 +130,8 @@ const LoginPage: React.FC = () => {
                     }
                   })}
                   type="email"
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 ${
-                    errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 ${errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'
+                    }`}
                   placeholder="Enter your email"
                 />
                 {errors.email && (
@@ -158,9 +157,8 @@ const LoginPage: React.FC = () => {
                       }
                     })}
                     type={showPassword ? 'text' : 'password'}
-                    className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 ${
-                      errors.password ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'
-                    }`}
+                    className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 ${errors.password ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'
+                      }`}
                     placeholder="Enter your password"
                   />
                   <button
