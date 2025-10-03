@@ -152,6 +152,16 @@ export default function AdminDashboard() {
     }
   };
 
+  // Reset to page 1 when search/filter changes
+  const currentSearch = searchTerm + filterStatus;
+  const previousSearch = React.useRef(currentSearch);
+  React.useEffect(() => {
+    if (previousSearch.current !== currentSearch) {
+      setCurrentPage(1);
+      previousSearch.current = currentSearch;
+    }
+  }, [currentSearch]);
+
   if (!isAuthenticated) {
     return null;
   }
@@ -167,16 +177,6 @@ export default function AdminDashboard() {
                          (filterStatus === 'inactive' && !user.isActive);
     return matchesSearch && matchesFilter;
   });
-
-  // Reset to page 1 when search/filter changes
-  const currentSearch = searchTerm + filterStatus;
-  const previousSearch = React.useRef(currentSearch);
-  React.useEffect(() => {
-    if (previousSearch.current !== currentSearch) {
-      setCurrentPage(1);
-      previousSearch.current = currentSearch;
-    }
-  }, [currentSearch]);
 
   // Pagination calculations
   const totalPages = Math.ceil(allFilteredUsers.length / itemsPerPage);

@@ -222,6 +222,16 @@ export default function UsersManagement() {
     }
   };
 
+  // Reset to page 1 when search/filter changes
+  const currentFilters = searchTerm + filterStatus + filterRole;
+  const previousFilters = React.useRef(currentFilters);
+  React.useEffect(() => {
+    if (previousFilters.current !== currentFilters) {
+      setCurrentPage(1);
+      previousFilters.current = currentFilters;
+    }
+  }, [currentFilters]);
+
   if (!isAuthenticated) {
     return null;
   }
@@ -240,16 +250,6 @@ export default function UsersManagement() {
 
     return matchesSearch && matchesStatus && matchesRole;
   });
-
-  // Reset to page 1 when search/filter changes
-  const currentFilters = searchTerm + filterStatus + filterRole;
-  const previousFilters = React.useRef(currentFilters);
-  React.useEffect(() => {
-    if (previousFilters.current !== currentFilters) {
-      setCurrentPage(1);
-      previousFilters.current = currentFilters;
-    }
-  }, [currentFilters]);
 
   // Pagination calculations
   const totalPages = Math.ceil(allFilteredUsers.length / itemsPerPage);
