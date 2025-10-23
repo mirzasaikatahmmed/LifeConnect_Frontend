@@ -1,29 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Typography, Paper, TextField, Button, CircularProgress } from "@mui/material";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 
 interface ProfileData {
+    id: number;
     name: string;
     email: string;
     phoneNumber: string;
     bloodType: string;
 }
 
-export default function ProfilePage() {
+export default function ProfileByIdPage() {
+    const params = useParams();
+    const id = params?.id as string;
+    const router = useRouter();
+
     const [profile, setProfile] = useState<ProfileData | null>(null);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
-    const router = useRouter();
 
     const api = axios.create({
         baseURL: "https://lifeconnect-backend.saikat.com.bd",
     });
 
     api.interceptors.request.use((config) => {
-        const token = localStorage.getItem("token"); 
+        const token = localStorage.getItem("token");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -31,52 +35,40 @@ export default function ProfilePage() {
     });
 
     useEffect(() => {
+        if (!id) return;
+
         const fetchProfile = async () => {
             try {
-                const res = await api.get("/donors/profile");
+                const res = await api.get(`/donors/${id}/profile`);
                 setProfile(res.data);
             } catch (err: any) {
                 console.error("Failed to fetch profile:", err.response?.data || err.message);
-                alert("Failed to load profile. Please login again.");
+                alert("Failed to load profile. Please login or check ID.");
                 router.push("/login");
             } finally {
                 setLoading(false);
             }
         };
+
         fetchProfile();
-    }, []);
+    }, [id]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!profile) return;
-        setProfile({ ...profile, [e.target.name]: e.target.value });
-    };
-
-    const handleUpdate = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!profile) {
-            alert("Profile data is not loaded.");
-            return;
-        }
-        if (!profile.name || !/^[A-Za-z ]+$/.test(profile.name)) {
-            alert("Name must contain only alphabets and spaces");
-            return;
-        }
-        if (!/^01\d{9}$/.test(profile.phoneNumber)) {
-            alert("Phone number must start with 01 and be 11 digits long");
-            return;
-        }
+    const handleUpdate = async (updatedData: any) => {
         try {
-            const res = await api.patch("/donors/profile", {
-                name: profile.name,
-                phoneNumber: profile.phoneNumber
-            });
-            setProfile(res.data); 
-            alert("✅ Profile updated successfully!");
+            const res = await api.patch("/donors/profile", updatedData);
+            console.log("Update successful:", res.data);
+            alert("Profile updated successfully!");
         } catch (err: any) {
-            console.error("Update failed:", err.response?.data || err.message);
-            alert("❌ Update failed: " + (err.response?.data?.message || err.message));
+            console.error("Update failed:", {
+                message: err.message,
+                response: err.response?.data,
+                status: err.response?.status,
+            });
+            alert(`❌ Update failed: ${err.response?.data?.message || err.message}`);
         }
     };
+
+
 
     if (loading) {
         return (
@@ -95,10 +87,14 @@ export default function ProfilePage() {
         );
     }
 
+    function handleChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
+        throw new Error("Function not implemented.");
+    }
+
     return (
         <Paper className="p-6 max-w-md mx-auto">
             <Typography variant="h5" gutterBottom>
-                My Profile
+                Donor Profile (ID: {profile.id})
             </Typography>
 
             <TextField
